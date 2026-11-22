@@ -86,7 +86,9 @@ export default async function Landing() {
             <Link href="/signup" className="btn solid" style={{ justifySelf: "start", marginTop: 6 }}>להרשמה</Link>
           </div>
         </section>
-        <p className="center muted small">© {settings?.business_name}</p>
+        <p className="center muted small">
+          © {settings?.business_name} · <Link className="link" href="/terms">תנאי שימוש</Link> · <Link className="link" href="/privacy">מדיניות פרטיות</Link>
+        </p>
       </main>
     </div>
   );

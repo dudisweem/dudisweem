@@ -3,6 +3,7 @@ import { useActionState, useState } from "react";
 import { signHealth, type FormState } from "@/app/(parent)/actions";
 import { SubmitButton } from "@/ui/SubmitButton";
 import { Alert } from "@/ui/primitives";
+import { SignaturePad } from "./SignaturePad";
 
 const QUESTIONS: { key: string; text: string; hint: string }[] = [
   { key: "heart", text: "האם ידוע על בעיית לב, לחץ דם או התעלפויות?", hint: "כולל אבחנה בעבר" },
@@ -85,10 +86,7 @@ export function HealthForm({ studentId, kidName, signerDefault, cancellationHour
             <label htmlFor="signer">שם ההורה החותם</label>
             <input className="inp" id="signer" name="signer" autoComplete="name" required value={signer} onChange={(e) => setSigner(e.target.value)} placeholder="שם מלא" />
           </div>
-          <div className="sig" style={{ display: "grid", placeItems: "center" }} aria-hidden="true">
-            <span style={{ font: "700 44px var(--f-num)", color: "var(--navy)" }}>{signer || "השם יופיע כאן"}</span>
-            <span className="base" />
-          </div>
+          <SignaturePad name="signature_png" label="חתימה ביד" />
           <label className="ck"><input type="checkbox" name="confirm" required />אני מאשר/ת שהמידע מלא ונכון וזו חתימתי</label>
         </fieldset>
       </div>

@@ -9,14 +9,13 @@ export type Kid = {
   birth_date: string | null;
   gender: "m" | "f" | "other" | null;
   swim_level: string;
-  allergies: string;
-  medical_notes: string;
   emergency_name: string;
   emergency_phone: string;
   notes: string;
   color: string;
   health_signed_at: string | null;
   health_signed_by: string | null;
+  health_signature_path: string | null;
   active: boolean;
 };
 
@@ -48,12 +47,54 @@ export type BookingRow = {
   service: { name: string; duration_min: number } | null;
 };
 
+/** Kids this user owns plus kids shared with them as an accepted guardian. */
 export async function getMyKids(parentId: string, includeInactive = false) {
   const supabase = await createClient();
-  let q = supabase.from("students").select("*").eq("parent_id", parentId).order("created_at");
+  const { data: shared } = await supabase
+    .from("guardianships")
+    .select("student_id")
+    .eq("user_id", parentId)
+    .not("accepted_at", "is", null);
+  const sharedIds = (shared ?? []).map((g) => g.student_id as string).filter((id) => /^[0-9a-f-]{36}$/.test(id));
+  let q = supabase
+    .from("students")
+    .select("*")
+    .or(sharedIds.length ? `parent_id.eq.${parentId},id.in.(${sharedIds.join(",")})` : `parent_id.eq.${parentId}`)
+    .order("created_at");
   if (!includeInactive) q = q.eq("active", true);
   const { data } = await q;
   return (data ?? []) as Kid[];
+}
+
+export type Medical = { allergies: string; medical_notes: string; health_answers: HealthAnswers | null };
+export type HealthAnswers = {
+  version?: number;
+  answers?: Record<string, { answer: "yes" | "no"; details: string }>;
+  fit?: "fit" | "unfit";
+  extra?: string;
+  photos?: boolean;
+};
+
+/** Decrypted medical fields (DB enforces owner / guardian / admin; empty for anyone else). */
+export async function getMedical(studentId: string): Promise<Medical> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("get_student_medical", { p_student: studentId });
+  const row = (data as Medical[] | null)?.[0];
+  return { allergies: row?.allergies ?? "", medical_notes: row?.medical_notes ?? "", health_answers: row?.health_answers ?? null };
+}
+
+export type Guardian = { id: string; invited_email: string; full_name: string; accepted: boolean; is_me: boolean };
+export async function getGuardians(studentId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("kid_guardians", { p_student: studentId });
+  return (data ?? []) as Guardian[];
+}
+
+export type Invitation = { id: string; student_first_name: string; inviter_name: string; created_at: string };
+export async function getMyInvitations() {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("my_invitations");
+  return (data ?? []) as Invitation[];
 }
 
 export async function getMyCredits() {

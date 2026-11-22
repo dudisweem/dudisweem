@@ -137,7 +137,10 @@ export function SignupForm() {
         </div>
         <label className="ck">
           <input type="checkbox" name="terms" required />
-          <span>קראתי ואני מסכים/ה לתנאי השימוש ולמדיניות הפרטיות של בית הספר</span>
+          <span>
+            קראתי ואני מסכים/ה ל<a className="link" href="/terms" target="_blank" rel="noopener noreferrer">תנאי השימוש</a> ול
+            <a className="link" href="/privacy" target="_blank" rel="noopener noreferrer">מדיניות הפרטיות</a> של בית הספר
+          </span>
         </label>
         <Feedback state={state} />
         <SubmitButton full pendingLabel="יוצרים חשבון…">יצירת חשבון</SubmitButton>
