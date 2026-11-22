@@ -67,7 +67,7 @@ export async function sendResetLink(fd: FormData) {
   const email = z.string().email().safeParse(fd.get("email"));
   if (!email.success) flash(back, "err", "invalid");
   const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "sea-d-change.vercel.app";
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "sweemer.vercel.app";
   const proto = h.get("x-forwarded-proto") ?? "https";
   const { error } = await createMailerClient().auth.resetPasswordForEmail(email.data, { redirectTo: `${proto}://${host}/auth/hash` });
   if (error) flash(back, "err", error.code === "over_email_send_rate_limit" ? "rate_limited" : "unknown");
