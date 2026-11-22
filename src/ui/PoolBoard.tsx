@@ -100,7 +100,7 @@ export function PoolBoard({ initial, backHref }: { initial: { rows: PoolRow[]; a
 
   const nowDate = new Date(now);
   return (
-    <div className="pool" id="app">
+    <div className="pool">
       <div className="ph">
         <div>
           <span className="brand" style={{ color: "#A9D8EB" }}>SWEEMER</span>

@@ -73,6 +73,12 @@ export function AppShell({
           </nav>
           <span className="grow" />
           <div className="who">
+            {role !== "parent" ? (
+              <Link href="/pool" className="pool-link">
+                <Icon name="waves" small />
+                מסך בריכה
+              </Link>
+            ) : null}
             <span>{name}</span>
             <form action="/auth/signout" method="post">
               <button type="submit" aria-label="התנתקות">

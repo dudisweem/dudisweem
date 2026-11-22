@@ -452,3 +452,18 @@ details.surf[open]>summary{border-bottom:1px solid var(--line)}
 .ck.invalid .guard-msg{flex-basis:100%;padding-inline-start:32px}
 fieldset.invalid,.field.invalid{animation:nudge 360ms var(--e-out)}
 @keyframes nudge{20%{transform:translateX(-5px)}60%{transform:translateX(4px)}}
+
+/* ---------- pool display: readability + layout ---------- */
+.pool{width:100%}
+.pool .ph{padding:24px clamp(16px,3vw,32px) 8px}
+.pcols{padding:14px clamp(16px,3vw,32px) 32px}
+.pc.dim{opacity:1;background:#0A2236}
+.pc.dim .tt,.pc.dim .lbl,.pc.dim .kids .k{color:#B9D3E2}
+.pc h2{font-size:16px;color:#A9D8EB}
+.sess .lbl{color:#E7F2F8}
+.kids .k{background:rgba(169,216,235,.16);color:#FFFFFF}
+.pool .upd a,.pool .upd button{min-height:44px}
+/* phone/tablet portrait: what is in the water first */
+@container pool (max-width:859px){.pc.now{order:-1}}
+.who .pool-link{background:rgba(169,216,235,.16);color:#fff;border-radius:12px;padding:0 12px;min-height:40px}
+@container app (max-width:520px){.who>span{display:none}}
