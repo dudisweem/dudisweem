@@ -11,6 +11,7 @@ const NOTICES: Record<string, string> = {
   inactive: "החשבון הושהה. צרו קשר עם בית הספר.",
   google_error: "ההתחברות עם Google לא הושלמה. נסו שוב.",
   signed_out: "התנתקתם בהצלחה.",
+  confirmed_other_browser: "המייל אושר. התחברו עם המייל והסיסמה שבחרתם.",
 };
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {

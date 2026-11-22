@@ -14,7 +14,12 @@ export async function GET(request: NextRequest) {
   if (!code) return NextResponse.redirect(`${base}/login?state=expired`);
   const supabase = await createClient();
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error || !data.user) return NextResponse.redirect(`${base}/login?state=expired`);
+  if (error || !data.user) {
+    // bad_code_verifier: link opened in another browser/app. For sign-up the email
+    // is already confirmed by Supabase at this point, so the user can simply log in.
+    const state = error?.code === "bad_code_verifier" || error?.code === "flow_state_not_found" ? "confirmed_other_browser" : "expired";
+    return NextResponse.redirect(`${base}/login?state=${state}`);
+  }
 
   if (next) return NextResponse.redirect(`${base}${next}`);
   const { data: p } = await supabase.from("profiles").select("role").eq("id", data.user.id).single();
