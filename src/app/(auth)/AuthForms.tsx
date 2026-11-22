@@ -35,7 +35,7 @@ function PasswordInput({ name, id, autoComplete }: { name: string; id: string; a
         autoComplete={autoComplete}
         required
         dir="ltr"
-        style={{ paddingInlineStart: 52 }}
+        style={{ paddingRight: 52, paddingLeft: 14 }}
       />
       <button
         type="button"
@@ -43,7 +43,7 @@ function PasswordInput({ name, id, autoComplete }: { name: string; id: string; a
         onClick={() => setShow((s) => !s)}
         aria-label={show ? "הסתרת סיסמה" : "הצגת סיסמה"}
         aria-pressed={show}
-        style={{ position: "absolute", insetInlineStart: 4, top: 4 }}
+        style={{ position: "absolute", right: 4, top: 4 }}
       >
         <Icon name="eye" small />
       </button>
