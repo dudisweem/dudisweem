@@ -43,7 +43,7 @@ export default async function Landing() {
         <section className="trio" aria-label="איך זה עובד">
           <div>
             <b className="num">1</b>
-            <p>נרשמים עם מייל או Google ומוסיפים את הילדים — כמה שצריך.</p>
+            <p>נרשמים עם מייל, Google או Facebook ומוסיפים את הילדים — כמה שצריך.</p>
           </div>
           <div>
             <b className="num">2</b>

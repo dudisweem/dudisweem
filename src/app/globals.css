@@ -489,3 +489,4 @@ fieldset.invalid,.field.invalid{animation:nudge 360ms var(--e-out)}
 .pc.now .wavebg{animation:swell 6s ease-in-out infinite alternate}
 @keyframes swell{from{transform:translateY(6%)}to{transform:translateY(-4%)}}
 @media (prefers-reduced-motion:reduce){.poolwaves .pw,.poolwaves .caustics,.pc.now .wavebg{animation:none}}
+.fbbtn{background:#1877F2!important;color:#fff!important;box-shadow:none!important}

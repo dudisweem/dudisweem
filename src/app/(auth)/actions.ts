@@ -99,6 +99,20 @@ export async function signInWithGoogle(fd: FormData) {
   redirect(data.url);
 }
 
+export async function signInWithFacebook(fd: FormData) {
+  const supabase = await createClient();
+  const next = safeNext(fd.get("next"));
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "facebook",
+    options: {
+      redirectTo: `${await origin()}/auth/callback${next ? `?next=${encodeURIComponent(next)}` : ""}`,
+      scopes: "email public_profile",
+    },
+  });
+  if (error || !data.url) redirect("/login?state=facebook_error");
+  redirect(data.url);
+}
+
 export async function forgotPassword(_: AuthState, fd: FormData): Promise<AuthState> {
   const parsed = email.safeParse(fd.get("email"));
   if (!parsed.success) return { error: "כתובת מייל לא תקינה" };

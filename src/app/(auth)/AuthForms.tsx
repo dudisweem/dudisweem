@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useActionState, useState } from "react";
-import { forgotPassword, resetPassword, signIn, signInWithGoogle, signUp, type AuthState } from "./actions";
+import { forgotPassword, resetPassword, signIn, signInWithFacebook, signInWithGoogle, signUp, type AuthState } from "./actions";
 import { SubmitButton } from "@/ui/SubmitButton";
 import { Alert } from "@/ui/primitives";
 import { Icon } from "@/ui/Icon";
@@ -20,6 +20,29 @@ function GoogleButton({ next }: { next?: string }) {
         המשך עם Google
       </SubmitButton>
     </form>
+  );
+}
+
+function FacebookButton({ next }: { next?: string }) {
+  return (
+    <form action={signInWithFacebook}>
+      {next ? <input type="hidden" name="next" value={next} /> : null}
+      <SubmitButton variant="ghost" full className="fbbtn" pendingLabel="מעבירים לפייסבוק…">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#fff" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.62 23.1 24 18.1 24 12.07Z" />
+        </svg>
+        המשך עם Facebook
+      </SubmitButton>
+    </form>
+  );
+}
+
+function SocialButtons({ next }: { next?: string }) {
+  return (
+    <div className="stack-s">
+      <GoogleButton next={next} />
+      <FacebookButton next={next} />
+    </div>
   );
 }
 
@@ -63,7 +86,7 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
   return (
     <div className="stack">
       {notice ? <Alert kind="info">{notice}</Alert> : null}
-      <GoogleButton next={next} />
+      <SocialButtons next={next} />
       <div className="divider">או עם מייל וסיסמה</div>
       <form action={action} className="stack" noValidate>
         {next ? <input type="hidden" name="next" value={next} /> : null}
@@ -109,7 +132,7 @@ export function SignupForm() {
   const f = state?.fields ?? {};
   return (
     <div className="stack">
-      <GoogleButton />
+      <SocialButtons />
       <div className="divider">או הרשמה עם מייל</div>
       <form action={action} className="stack" noValidate>
         <div className="field">

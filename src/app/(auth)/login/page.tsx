@@ -10,6 +10,7 @@ const NOTICES: Record<string, string> = {
   expired: "הקישור פג תוקף או כבר נוצל. התחברו או בקשו קישור חדש.",
   inactive: "החשבון הושהה. צרו קשר עם בית הספר.",
   google_error: "ההתחברות עם Google לא הושלמה. נסו שוב.",
+  facebook_error: "ההתחברות עם Facebook לא הושלמה. נסו שוב או הירשמו עם מייל.",
   signed_out: "התנתקתם בהצלחה.",
   confirmed_other_browser: "המייל אושר. התחברו עם המייל והסיסמה שבחרתם.",
 };
