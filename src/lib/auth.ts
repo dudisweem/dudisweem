@@ -64,6 +64,7 @@ export type Settings = {
   payment_card: boolean;
   bit_phone: string;
   paybox_link: string;
+  bit_link: string;
   booking_open: boolean;
   closed_message: string;
 };

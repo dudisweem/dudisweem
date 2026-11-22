@@ -56,8 +56,8 @@ export function AppShell({
     <div id="app">
       <header className="band">
         <div className="topnav">
-          <Link href={items[0]!.href} className="brand" aria-label="SEA.D.CHANGE דף הבית">
-            SEA<em>.</em>D<em>.</em>CHANGE
+          <Link href={items[0]!.href} className="brand" aria-label="SWEEMER דף הבית">
+            SWEEMER
           </Link>
           <nav className="links" aria-label="ניווט ראשי">
             {items.map((i) => {

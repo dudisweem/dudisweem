@@ -88,6 +88,7 @@ export default async function BookPage({ searchParams }: PageProps<"/book">) {
       requireApproval={settings.require_approval}
       bitPhone={settings.bit_phone}
       payboxLink={settings.paybox_link}
+      bitLink={settings.bit_link ?? ""}
       initialKid={flowKids.some((k) => k.id === kidParam && k.healthOk) ? kidParam : null}
     />
   );

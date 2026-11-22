@@ -21,7 +21,7 @@ export default async function Landing() {
       <header className="hero">
         <div className="in">
           <div className="topnav" style={{ padding: 0 }}>
-            <span className="brand">SEA<em>.</em>D<em>.</em>CHANGE</span>
+            <span className="brand">SWEEMER</span>
             <span className="grow" />
             <Link href="/login" className="btn sm ghost" style={{ background: "transparent", color: "#EAF3F8", boxShadow: "inset 0 0 0 1.5px rgba(169,216,235,.4)" }}>
               התחברות

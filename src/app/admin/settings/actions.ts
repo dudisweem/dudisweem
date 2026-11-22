@@ -27,6 +27,8 @@ export async function saveSettings(fd: FormData) {
   if (!business_name) flash(back, "err", "invalid");
   const paybox = str(fd, "paybox_link");
   if (paybox && !/^https:\/\//.test(paybox)) flash(back, "err", "invalid");
+  const bitLink = str(fd, "bit_link");
+  if (bitLink && !/^https:\/\//.test(bitLink)) flash(back, "err", "invalid");
 
   const update = {
     ...nums.data,
@@ -46,6 +48,7 @@ export async function saveSettings(fd: FormData) {
     payment_card: bool(fd, "payment_card"),
     bit_phone: str(fd, "bit_phone").slice(0, 30),
     paybox_link: paybox.slice(0, 300),
+    bit_link: bitLink.slice(0, 300),
     updated_at: new Date().toISOString(),
   };
   if (!update.payment_cash && !update.payment_bit && !update.payment_paybox && !update.payment_card) {

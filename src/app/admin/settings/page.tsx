@@ -98,7 +98,11 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
           <div className="cols2">
             <Text name="bit_phone" label="מספר לתשלום ב־Bit" value={s.bit_phone} ltr type="tel" />
             <Text name="paybox_link" label="קישור PayBox (https)" value={s.paybox_link} ltr type="url" />
+            <Text name="bit_link" label="קישור תשלום Bit (לא חובה, https)" value={s.bit_link ?? ""} ltr type="url" />
           </div>
+          <p className="hint" style={{ margin: 0 }}>
+            אחרי ההזמנה ההורה מקבל כפתור שפותח את האפליקציה. PayBox: קישור לקבוצה או לתשלום מהאפליקציה (שיתוף קישור). Bit: אם יש לכם קישור תשלום של Bit לעסקים — הדביקו כאן; בלי קישור, ההורה יקבל את המספר והסכום מועתקים ואת אפליקציית Bit פתוחה.
+          </p>
         </Group>
 
         <Group title="פרטי בית הספר">

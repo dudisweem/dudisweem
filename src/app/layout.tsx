@@ -8,7 +8,7 @@ const assistant = Assistant({ subsets: ["hebrew", "latin"], weight: ["400", "500
 const karantina = Karantina({ subsets: ["hebrew", "latin"], weight: ["400", "700"], variable: "--font-karantina" });
 
 export const metadata: Metadata = {
-  title: { default: "SEA.D.CHANGE", template: "%s · SEA.D.CHANGE" },
+  title: { default: "SWEEMER", template: "%s · SWEEMER" },
   description: "בית ספר לשחייה, מיומנויות מים וחשיפה לקור — הזמנת שיעורים וניהול",
   robots: { index: false, follow: false },
 };

@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { PayNow } from "./PayNow";
 import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/ui/AppShell";
 import { Icon, type IconName } from "@/ui/Icon";
@@ -47,6 +48,7 @@ export function BookingFlow(props: {
   requireApproval: boolean;
   bitPhone: string;
   payboxLink: string;
+  bitLink: string;
   initialKid: string | null;
 }) {
   const { kids, services, instructors, days, payments } = props;
@@ -222,14 +224,7 @@ export function BookingFlow(props: {
             <span className="av m" style={{ background: "var(--free-bg)", color: "var(--free)" }}><Icon name="wallet" /></span>
             <span className="col grow">
               <b>תשלום ב־{PAYMENT_LABEL[payment]} · {fmtMoney(service.price)}</b>
-              {payment === "bit" && props.bitPhone ? (
-                <small>להעברה למספר <b dir="ltr" className="num">{props.bitPhone}</b></small>
-              ) : null}
-              {payment === "paybox" && props.payboxLink ? (
-                <small>
-                  <a className="link paylink" href={props.payboxLink} target="_blank" rel="noopener noreferrer">{props.payboxLink}</a>
-                </small>
-              ) : null}
+              <PayNow method={payment} amount={service.price} bitPhone={props.bitPhone} bitLink={props.bitLink} payboxLink={props.payboxLink} />
               <small>ההעברה לא מסומנת ״שולם״ אוטומטית — המנהל מאמת את קבלת הכסף.</small>
             </span>
           </div>
