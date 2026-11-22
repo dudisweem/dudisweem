@@ -1,0 +1,449 @@
+<title>SEA.D.CHANGE Directions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Heebo:wght@400;500;700;800&family=Karantina:wght@400;700&family=Rubik:wght@400;500;700;900&family=Suez+One&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: presentation sheet. Four phones on one row-grid, each phone owns its own visual world; page chrome stays quiet. */
+:root{
+  --bg:#EDF1F5; --ink:#0F2233; --mut:#4B5F71; --line:#D2DBE4; --card:#FFFFFF; --acc:#1769B0;
+  --f-ui:"Assistant","Heebo",system-ui,sans-serif;
+  --e-out:cubic-bezier(.23,1,.32,1); --e-io:cubic-bezier(.77,0,.175,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A141E;--ink:#E5EDF4;--mut:#94A7B9;--line:#1F3143;--card:#101D2A;--acc:#5BA9EA;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0A141E;--ink:#E5EDF4;--mut:#94A7B9;--line:#1F3143;--card:#101D2A;--acc:#5BA9EA;color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.55;
+  padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+::selection{background:var(--acc);color:#fff}
+.wrap{max-width:1480px;margin:0 auto;display:grid;gap:36px}
+header.top{display:grid;gap:10px;max-width:70ch}
+header.top h1{margin:0;font:800 clamp(28px,3.4vw,40px)/1.1 var(--f-ui);letter-spacing:-.01em;text-wrap:balance}
+header.top p{margin:0;color:var(--mut);font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:28px 22px;align-items:start}
+.dir{display:grid;gap:14px;justify-items:center}
+.meta{width:100%;max-width:340px;display:grid;gap:6px}
+.meta h2{margin:0;font:800 21px/1.2 var(--f-ui)}
+.meta .tag{font-size:13px;font-weight:700;color:var(--acc)}
+.meta p{margin:0;color:var(--mut);font-size:14.5px}
+.sw{display:flex;gap:6px;margin-top:4px}
+.sw i{width:22px;height:22px;border-radius:6px;border:1px solid var(--line)}
+.demo{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:700 14px var(--f-ui);
+  padding:10px 16px;border-radius:999px;cursor:pointer;display:inline-flex;gap:8px;align-items:center;min-height:44px;
+  transition:transform 160ms var(--e-out),border-color 160ms ease}
+.demo:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.demo:hover{border-color:var(--acc)}}
+.demo svg{width:16px;height:16px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+
+/* phone shell, shared */
+.phone{width:320px;max-width:100%;height:660px;border-radius:46px;border:10px solid #0C0F13;background:#0C0F13;
+  box-shadow:0 30px 60px -20px rgba(8,22,38,.45),0 8px 18px -8px rgba(8,22,38,.3);position:relative;overflow:hidden}
+.phone::before{content:"";position:absolute;top:8px;left:50%;translate:-50% 0;width:92px;height:26px;border-radius:20px;background:#0C0F13;z-index:30}
+.scr{position:absolute;inset:0;border-radius:36px;overflow:hidden auto;scrollbar-width:none;direction:rtl}
+.scr::-webkit-scrollbar{display:none}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.status{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:600 13px/1 var(--f-ui);direction:ltr}
+.tabs{position:sticky;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 6px 18px;z-index:5}
+.tabs a{display:grid;justify-items:center;gap:3px;font-size:11px;font-weight:600;text-decoration:none;color:inherit;min-height:44px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ============ A. COLD PLUNGE ============ */
+.cold{--ink:#0A2033;--deep:#0E2F4B;--ice:#EAF3F8;--frost:#A9D8EB;--coral:#FF6A47;--chip:#D7E9F2;
+  background:var(--ice);color:var(--ink);font-family:"Assistant",sans-serif}
+.cold ::selection{background:var(--coral);color:#fff}
+.cold .head{background:var(--deep);color:#EAF3F8;padding-bottom:42px;position:relative}
+.cold .brand{display:flex;justify-content:space-between;align-items:center;padding:4px 22px 0}
+.cold .brand b{font:700 13px/1 "Assistant";letter-spacing:.28em;direction:ltr}
+.cold .hi{padding:14px 22px 0;font:600 15px "Assistant";color:var(--frost)}
+.cold .next{padding:2px 22px 0;display:grid;gap:2px}
+.cold .next .who{font:700 18px "Assistant"}
+.cold .time{font:700 92px/0.82 "Karantina",sans-serif;letter-spacing:-.01em;display:flex;align-items:baseline;gap:12px;margin-top:8px}
+.cold .time small{font:600 15px/1.3 "Assistant";color:var(--frost)}
+.cold .facts{display:flex;gap:14px;font-size:13.5px;color:#C9E3EF;margin-top:10px}
+.cold .facts span{display:flex;gap:5px;align-items:center}
+.cold .ok{display:inline-flex;gap:5px;align-items:center;background:rgba(169,216,235,.16);color:#DFF2FA;font-weight:700;font-size:12.5px;padding:4px 10px;border-radius:99px;width:max-content;margin-top:12px}
+.cold .ok .ic{width:14px;height:14px}
+.wave{position:absolute;inset:auto 0 -1px 0;height:34px;overflow:hidden}
+.wave svg{position:absolute;bottom:0;width:200%;height:100%;animation:drift 9s linear infinite}
+.wave svg+svg{animation-duration:14s;opacity:.55}
+@keyframes drift{to{transform:translateX(50%)}}
+.cold .body{padding:6px 18px 18px;display:grid;gap:14px}
+.cold h3{margin:6px 4px 0;font:800 13px "Assistant";letter-spacing:.06em;color:#3D5A72}
+.cold .task{background:#fff;border-radius:18px;padding:14px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;box-shadow:0 6px 18px -10px rgba(14,47,75,.35)}
+.cold .task .ic{color:var(--coral);width:22px;height:22px;grid-row:span 2}
+.cold .task b{font-size:15px}.cold .task span{font-size:13px;color:#4A6378}
+.cold .task a{grid-column:2;font-weight:800;color:var(--deep);font-size:14px;text-decoration:none;margin-top:4px}
+.cold .kids{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cold .kid{background:#fff;border-radius:20px;padding:14px 12px 12px;display:grid;gap:10px;justify-items:center;text-align:center;box-shadow:0 6px 18px -10px rgba(14,47,75,.35)}
+.cold .av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font:800 17px "Assistant";color:#fff}
+.cold .kid b{font-size:15px;line-height:1.1}.cold .kid small{display:block;font-size:12px;color:#557086}
+.vessel{width:62px;height:84px;border-radius:16px 16px 20px 20px;background:var(--chip);position:relative;overflow:hidden;border:2px solid #C3DEEA}
+.vessel .lvl{position:absolute;inset:auto 0 0 0;height:calc(var(--l) * 1%);background:linear-gradient(#5DB4DA,#1D6E9E);transition:height 900ms var(--e-io)}
+.vessel .lvl svg{position:absolute;top:-7px;width:200%;height:8px;animation:drift 3.4s linear infinite;fill:#5DB4DA}
+.vessel.empty{border-style:dashed}
+.cold .cnt{font:700 34px/0.9 "Karantina";letter-spacing:0}
+.cold .cnt em{font:600 12px "Assistant";font-style:normal;color:#557086;display:block;margin-top:4px}
+.pill{display:inline-flex;gap:4px;align-items:center;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:99px}
+.pill .ic{width:13px;height:13px}
+.cold .p-ok{background:#DDF3E6;color:#16603A}.cold .p-wait{background:#FFE9D9;color:#8A3410}
+.cold .cta{appearance:none;border:0;background:var(--coral);color:#2A0B02;font:800 17px "Assistant";min-height:54px;border-radius:18px;display:flex;gap:8px;justify-content:center;align-items:center;transition:transform 160ms var(--e-out)}
+.cold .cta:active{transform:scale(.97)}
+.cold .tabs{background:rgba(234,243,248,.94);backdrop-filter:blur(10px);color:#5A7489;border-top:1px solid #D2E5EE}
+.cold .tabs a.on{color:var(--deep)}
+.cold .tabs a.on .ic{stroke-width:2.3}
+.drip{position:absolute;inset:auto 0 0 0;height:100%;pointer-events:none}
+
+/* ============ B. POOL LANES ============ */
+.lane{--blue:#0872C3;--deep:#05365E;--red:#E2443A;--yel:#F4C21B;--tile:#F3F8FB;--grout:#E1ECF3;--ink:#082842;
+  color:var(--ink);font-family:"Heebo",sans-serif;
+  background:var(--tile) repeating-linear-gradient(0deg,var(--grout) 0 1px,transparent 1px 26px),
+             repeating-linear-gradient(90deg,var(--grout) 0 1px,transparent 1px 26px);}
+.rope{display:flex;gap:0;height:12px;align-items:center;overflow:hidden}
+.rope i{flex:none;width:14px;height:10px;border-radius:5px;margin-inline:1px}
+.rope.anim{animation:ropeMove 6s linear infinite}
+@keyframes ropeMove{to{transform:translateX(64px)}}
+.lane .topbar{background:var(--blue);color:#fff;padding-bottom:14px}
+.lane .topbar .status{color:#fff}
+.lane .t1{display:flex;justify-content:space-between;align-items:center;padding:0 20px 12px}
+.lane .t1 b{font:900 15px "Rubik";letter-spacing:.06em;direction:ltr}
+.lane .t1 span{font-size:14px;opacity:.9}
+.lane .next{margin:16px 16px 0;background:#fff;border-radius:14px;display:grid;grid-template-columns:72px 1fr;overflow:hidden;box-shadow:0 10px 24px -14px rgba(5,54,94,.5)}
+.lane .mark{background:var(--deep);color:#fff;display:grid;place-items:center;align-content:center;gap:0;text-align:center}
+.lane .mark b{font:900 30px/1 "Rubik"}.lane .mark small{font-size:11px;opacity:.75;margin-top:4px}
+.lane .next .in{padding:12px 14px;display:grid;gap:2px}
+.lane .next .in b{font:700 17px "Rubik"}
+.lane .next .in span{font-size:13px;color:#3F5D74}
+.lane .tline{display:flex;gap:8px;align-items:center;font:700 26px "Rubik";color:var(--deep);margin-top:2px}
+.lane .tline small{font:500 12.5px "Heebo";color:#3F5D74}
+.lane .body{padding:16px;display:grid;gap:14px}
+.lane h3{margin:4px 2px 0;font:700 14px "Rubik";color:var(--deep);display:flex;justify-content:space-between}
+.lane h3 small{font:500 12.5px "Heebo";color:#4F6B80}
+.lane .kid{background:#fff;border-radius:14px;padding:14px;display:grid;gap:10px;box-shadow:0 6px 16px -12px rgba(5,54,94,.45)}
+.lane .kr{display:flex;align-items:center;gap:10px}
+.lane .av{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font:900 16px "Rubik";color:#fff}
+.lane .kr b{font:700 16px "Rubik"}.lane .kr small{display:block;font-size:12.5px;color:#4F6B80}
+.lane .kr .pill{margin-inline-start:auto}
+.floats{display:flex;gap:4px;align-items:center;position:relative;padding-block:4px}
+.floats::before{content:"";position:absolute;inset:50% 0 auto;height:2px;background:#C8D9E5}
+.floats i{position:relative;flex:1;height:14px;border-radius:7px;background:#DCE7EF;transition:background 400ms ease,transform 400ms var(--e-out)}
+.floats i.on{background:var(--c)}
+.floats i.pop{animation:pop 600ms var(--e-out)}
+@keyframes pop{40%{transform:scaleY(1.5)}}
+.lane .lbl{display:flex;justify-content:space-between;font-size:12.5px;color:#4F6B80}
+.lane .lbl b{color:var(--ink);font-family:"Rubik"}
+.lane .p-ok{background:#DCF2E4;color:#14603A}.lane .p-wait{background:#FFF1C9;color:#6E4A00}
+.lane .task{background:var(--yel);border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center;color:#3A2A00}
+.lane .task b{font:700 14.5px "Rubik"}.lane .task span{font-size:12.5px;display:block}
+.lane .cta{appearance:none;border:0;background:var(--red);color:#fff;font:700 17px "Rubik";min-height:52px;border-radius:14px;display:flex;gap:8px;justify-content:center;align-items:center;transition:transform 160ms var(--e-out)}
+.lane .cta:active{transform:scale(.97)}
+.lane .tabs{background:#fff;color:#56718A;border-top:3px solid var(--blue)}
+.lane .tabs a.on{color:var(--blue)}
+
+/* ============ C. BOARDING PASS ============ */
+.pass{--ground:#E9EBEE;--paper:#FFFFFF;--ink:#111418;--soft:#5D6672;--rule:#D9DDE2;--amber:#FFB21E;--green:#138A4C;--navy:#14304A;
+  background:var(--ground);color:var(--ink);font-family:"Assistant",sans-serif}
+.pass .mono{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+.pass .bar{display:flex;justify-content:space-between;align-items:center;padding:2px 20px 14px}
+.pass .bar b{font:400 17px "Suez One";direction:ltr;letter-spacing:.02em}
+.pass .bar span{font-size:14px;color:var(--soft)}
+.pass .body{padding:0 14px 16px;display:grid;gap:14px}
+.tk{background:var(--paper);border-radius:16px;position:relative;filter:drop-shadow(0 10px 14px rgba(17,20,24,.12))}
+.tk .top{padding:14px 16px 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.tk .k{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--soft)}
+.tk .v{font-size:16px;font-weight:700;line-height:1.2}
+.tk .v.big{font:700 34px/1 "JetBrains Mono";letter-spacing:-.02em}
+.tk .perf{height:20px;position:relative;margin:0 0}
+.tk .perf::before{content:"";position:absolute;inset:50% 18px auto;border-top:2px dashed var(--rule)}
+.tk .perf::after,.tk .perf i{content:"";position:absolute;top:0;width:20px;height:20px;border-radius:50%;background:var(--ground)}
+.tk .perf::after{left:-10px}.tk .perf i{right:-10px}
+.tk .stub{padding:8px 16px 14px;display:flex;justify-content:space-between;align-items:center}
+.tk .st{display:inline-flex;gap:6px;align-items:center;font-weight:800;font-size:14px;color:var(--green)}
+.tk .bars{height:26px;width:96px;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 8px,var(--ink) 8px 11px,transparent 11px 12px)}
+.pass h3{margin:4px 4px 0;font:800 12.5px "Assistant";letter-spacing:.1em;color:var(--soft);display:flex;justify-content:space-between}
+.board{background:var(--navy);color:#E9EEF3;border-radius:14px;overflow:hidden}
+.board .hd,.board .rw{display:grid;grid-template-columns:56px 1fr 62px 78px;gap:6px;align-items:center;padding:9px 12px}
+.board .hd{font-size:10.5px;letter-spacing:.1em;color:#8FA4B8;font-weight:700;border-bottom:1px solid #22445F}
+.board .rw{border-bottom:1px solid #1C3A53;font-size:14px;perspective:400px}
+.board .rw:last-child{border:0}
+.board .rw .t{font:700 15px "JetBrains Mono"}
+.board .rw .s{font-size:12px;font-weight:800;display:flex;gap:4px;align-items:center}
+.board .s.g{color:#5FD69A}.board .s.a{color:var(--amber)}.board .s.w{color:#BFCBD6}
+.board .rw.chg{background:rgba(255,178,30,.16);cursor:pointer}
+.flip{display:inline-block;animation:flip 520ms var(--e-out)}
+@keyframes flip{0%{transform:rotateX(90deg);opacity:.2}100%{transform:none;opacity:1}}
+.pass .mini{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pass .mk{background:var(--paper);border-radius:12px;padding:12px;display:grid;gap:6px;filter:drop-shadow(0 6px 8px rgba(17,20,24,.08))}
+.pass .mk b{font-size:15px}.pass .mk .k{font-size:10.5px;letter-spacing:.08em;font-weight:700;color:var(--soft)}
+.pass .mk .v{font:700 20px "JetBrains Mono"}
+.pass .alert{display:flex;gap:6px;align-items:center;font-size:12px;font-weight:800;color:#8A5300}
+.pass .cta{appearance:none;border:0;background:var(--ink);color:#fff;font:800 16px "Assistant";min-height:52px;border-radius:14px;display:flex;gap:8px;justify-content:center;align-items:center;transition:transform 160ms var(--e-out)}
+.pass .cta:active{transform:scale(.97)}
+.pass .tabs{background:var(--paper);color:var(--soft);border-top:1px solid var(--rule)}
+.pass .tabs a.on{color:var(--ink)}
+
+/* ============ D. CANON ============ */
+.canon{--bg:#F3F7FC;--ink:#17324D;--blue:#1769B0;--mut:#5C7187;--line:#D9E4EE;
+  background:var(--bg);color:var(--ink);font-family:"Heebo",sans-serif}
+.canon .bar{display:flex;justify-content:space-between;align-items:center;padding:2px 20px 10px}
+.canon .bar b{font:800 15px "Heebo";direction:ltr;color:var(--blue)}
+.canon .body{padding:0 16px 16px;display:grid;gap:12px}
+.canon h2{margin:4px 2px 2px;font:800 22px "Heebo"}
+.canon .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:8px}
+.canon .card .h{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mut)}
+.canon .card b{font-size:16px}
+.canon .row{display:flex;gap:14px;font-size:13.5px;color:var(--mut)}
+.canon .row span{display:flex;gap:5px;align-items:center}
+.canon .kid{display:flex;gap:10px;align-items:center}
+.canon .av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800}
+.canon .kid small{display:block;color:var(--mut);font-size:12.5px}
+.canon .bar2{height:8px;border-radius:4px;background:#E3ECF5;overflow:hidden}
+.canon .bar2 i{display:block;height:100%;background:var(--blue);border-radius:4px}
+.canon .p-ok{background:#E0F3E8;color:#17603B}.canon .p-wait{background:#FFF0D6;color:#7A4B00}
+.canon .cta{appearance:none;border:0;background:var(--blue);color:#fff;font:700 16px "Heebo";min-height:50px;border-radius:12px;display:flex;gap:8px;justify-content:center;align-items:center;transition:transform 160ms var(--e-out)}
+.canon .cta:active{transform:scale(.97)}
+.canon .tabs{background:#fff;color:var(--mut);border-top:1px solid var(--line)}
+.canon .tabs a.on{color:var(--blue)}
+.toast{position:absolute;inset:auto 14px 92px;background:#17324D;color:#fff;border-radius:14px;padding:12px 14px;font-size:14px;display:flex;gap:10px;align-items:center;
+  transform:translateY(140%);opacity:0;transition:transform 400ms var(--e-out),opacity 300ms ease;z-index:20}
+.toast.show{transform:none;opacity:1}
+
+@media (prefers-reduced-motion:reduce){
+  .wave svg,.vessel .lvl svg,.rope.anim{animation:none}
+  .vessel .lvl{transition:none}.flip,.floats i.pop{animation:none}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="i-kids" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c.6-3.4 2.8-5.4 5.5-5.4s4.9 2 5.5 5.4"/><circle cx="17" cy="9.5" r="2.5"/><path d="M15.5 14.6c2.4.2 4.2 2 4.8 5.4"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20Z"/><path d="M6 12h3l1.5-2.5 2 5 1.5-2.5h4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.8 3.6-6 7-6s6.2 2.2 7 6"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4L12 4Z"/><path d="M12 10v4.5M12 17.2v.1"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3.5 8.5V6h17v2.5a2.5 2.5 0 0 0 0 5V16h-17v-2.5a2.5 2.5 0 0 0 0-5Z"/><path d="M14 6v10" stroke-dasharray="2 2"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></symbol>
+  <symbol id="wv" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M0 10 Q25 0 50 10 T100 10 T150 10 T200 10 V20 H0Z"/></symbol>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <h1>ארבעה כיווני עיצוב ל־SEA.D.CHANGE</h1>
+    <p>אותו מסך בדיוק, ״הבית שלי״ של הורה בטלפון, בארבע שפות עיצוב שונות. בכל טלפון יש כפתור הדגמה שמפעיל את התנועה המייחדת של הכיוון. הנתונים לדוגמה בלבד.</p>
+  </header>
+
+  <div class="grid">
+  <!-- A -->
+  <section class="dir" aria-labelledby="hA">
+    <div class="meta">
+      <span class="tag">כיוון א׳ · ההמלצה שלי</span>
+      <h2 id="hA">קור ומים</h2>
+      <p>מתוך עולם החשיפה לקור של בית הספר. כחול דיו עמוק וקרח, ואלמוג חם אחד שמסמן רק את הפעולה האנושית. כל כמות מוצגת כמפלס מים בכלי.</p>
+      <div class="sw"><i style="background:#0E2F4B"></i><i style="background:#EAF3F8"></i><i style="background:#A9D8EB"></i><i style="background:#1D6E9E"></i><i style="background:#FF6A47"></i></div>
+    </div>
+    <div class="phone"><div class="scr cold" id="pA">
+      <div class="head">
+        <div class="status"><span>9:41</span><span>●●● 5G</span></div>
+        <div class="brand"><b>SEA.D.CHANGE</b><svg class="ic"><use href="#i-user"/></svg></div>
+        <div class="hi">בוקר טוב, מיכל</div>
+        <div class="next">
+          <div class="who">השיעור הבא של שגב</div>
+          <div class="time num">16:30<small>יום ג׳<br>12.11</small></div>
+          <div class="facts"><span><svg class="ic" style="width:15px;height:15px"><use href="#i-user"/></svg>דודי</span><span><svg class="ic" style="width:15px;height:15px"><use href="#i-clock"/></svg>45 דק׳ פרטני</span><span><svg class="ic" style="width:15px;height:15px"><use href="#i-pin"/></svg>בריכה א׳</span></div>
+          <span class="ok"><svg class="ic"><use href="#i-check"/></svg>מאושר</span>
+        </div>
+        <div class="wave" aria-hidden="true">
+          <svg viewBox="0 0 200 20" preserveAspectRatio="none" fill="#EAF3F8"><use href="#wv"/></svg>
+          <svg viewBox="0 0 200 20" preserveAspectRatio="none" fill="#A9D8EB" style="bottom:4px"><use href="#wv"/></svg>
+        </div>
+      </div>
+      <div class="body">
+        <div class="task"><svg class="ic"><use href="#i-heart"/></svg><b>הצהרת בריאות לדין</b><span>נדרשת לפני הזמנת שיעור</span><a href="#" onclick="return false">למילוי ההצהרה ←</a></div>
+        <h3>הילדים שלי</h3>
+        <div class="kids">
+          <div class="kid">
+            <span class="av" style="background:#1D6E9E">ש</span>
+            <div><b>שגב</b><small>גיל 9 · מתקדמים</small></div>
+            <div class="vessel" role="img" aria-label="נותרו 7 מתוך 10 שיעורים"><div class="lvl" id="lvlA" style="--l:70"><svg viewBox="0 0 200 20" preserveAspectRatio="none"><use href="#wv"/></svg></div></div>
+            <div class="cnt num"><span id="cntA">7</span>/10<em>שיעורים בכרטיסייה</em></div>
+            <span class="pill p-ok"><svg class="ic"><use href="#i-check"/></svg>בריאות בתוקף</span>
+          </div>
+          <div class="kid">
+            <span class="av" style="background:#E2643F">ד</span>
+            <div><b>דין</b><small>גיל 8 · מתחילים</small></div>
+            <div class="vessel empty" role="img" aria-label="אין כרטיסייה"><div class="lvl" style="--l:0"></div></div>
+            <div class="cnt" style="font-size:20px;padding-top:8px">—<em>אין כרטיסייה</em></div>
+            <span class="pill p-wait"><svg class="ic"><use href="#i-alert"/></svg>טרם מולאה</span>
+          </div>
+        </div>
+        <button class="cta" type="button"><svg class="ic"><use href="#i-plus"/></svg>הזמנת שיעור</button>
+      </div>
+      <nav class="tabs"><a class="on" href="#"><svg class="ic"><use href="#i-home"/></svg>הבית שלי</a><a href="#"><svg class="ic"><use href="#i-kids"/></svg>הילדים</a><a href="#"><svg class="ic"><use href="#i-cal"/></svg>שיעורים</a><a href="#"><svg class="ic"><use href="#i-heart"/></svg>בריאות</a></nav>
+    </div></div>
+    <button class="demo" type="button" id="dA"><svg class="ic"><use href="#i-play"/></svg>הדגמה: שגב סיים שיעור</button>
+  </section>
+
+  <!-- B -->
+  <section class="dir" aria-labelledby="hB">
+    <div class="meta">
+      <span class="tag">כיוון ב׳ · הבחירה המוכרת</span>
+      <h2 id="hB">נתיבי בריכה</h2>
+      <p>בריכת תחרות: חבלי מסלול צבעוניים, אריחים, סימוני עומק. כל מדריך הוא מסלול ביומן, וההתקדמות היא חבל שהמצופים שלו נדלקים.</p>
+      <div class="sw"><i style="background:#0872C3"></i><i style="background:#05365E"></i><i style="background:#F3F8FB"></i><i style="background:#E2443A"></i><i style="background:#F4C21B"></i></div>
+    </div>
+    <div class="phone"><div class="scr lane">
+      <div class="topbar">
+        <div class="status"><span>9:41</span><span>●●● 5G</span></div>
+        <div class="t1"><b>SEA.D.CHANGE</b><span>שלום, מיכל</span></div>
+        <div class="rope anim" aria-hidden="true" id="ropeB"></div>
+        <div class="next">
+          <div class="mark"><b class="num">2</b><small>מסלול</small></div>
+          <div class="in">
+            <b>השיעור הבא · שגב</b>
+            <div class="tline num">16:30<small>יום ג׳ 12.11</small></div>
+            <span>דודי · 45 דק׳ פרטני · בריכה א׳</span>
+          </div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="task"><svg class="ic"><use href="#i-heart"/></svg><div><b>חסרה הצהרת בריאות לדין</b><span>יש למלא לפני שמזמינים שיעור</span></div></div>
+        <h3>הילדים שלי <small>כרטיסייה</small></h3>
+        <div class="kid">
+          <div class="kr"><span class="av" style="background:#0872C3">ש</span><div><b>שגב</b><small>גיל 9 · מתקדמים</small></div><span class="pill p-ok"><svg class="ic"><use href="#i-check"/></svg>בתוקף</span></div>
+          <div class="floats" id="flB" style="--c:#0872C3" role="img" aria-label="נותרו 7 מתוך 10 שיעורים"></div>
+          <div class="lbl"><span>נותרו בכרטיסייה</span><b class="num"><span id="cntB">7</span> מתוך 10</b></div>
+        </div>
+        <div class="kid">
+          <div class="kr"><span class="av" style="background:#E2443A">ד</span><div><b>דין</b><small>גיל 8 · מתחילים</small></div><span class="pill p-wait"><svg class="ic"><use href="#i-alert"/></svg>טרם מולאה</span></div>
+          <div class="lbl"><span>אין כרטיסייה פעילה</span><b>—</b></div>
+        </div>
+        <button class="cta" type="button"><svg class="ic"><use href="#i-plus"/></svg>הזמנת שיעור</button>
+      </div>
+      <nav class="tabs"><a class="on" href="#"><svg class="ic"><use href="#i-home"/></svg>הבית שלי</a><a href="#"><svg class="ic"><use href="#i-kids"/></svg>הילדים</a><a href="#"><svg class="ic"><use href="#i-cal"/></svg>שיעורים</a><a href="#"><svg class="ic"><use href="#i-heart"/></svg>בריאות</a></nav>
+    </div></div>
+    <button class="demo" type="button" id="dB"><svg class="ic"><use href="#i-play"/></svg>הדגמה: שגב סיים שיעור</button>
+  </section>
+
+  <!-- C -->
+  <section class="dir" aria-labelledby="hC">
+    <div class="meta">
+      <span class="tag">כיוון ג׳ · המתחרה</span>
+      <h2 id="hC">כרטיס עלייה</h2>
+      <p>כל שיעור הוא כרטיס מחולק למקטעים עם ספרות טבלאיות, והשיעורים הקרובים הם לוח המראות. שינוי נדלק בענבר ונשאר דולק עד שרואים אותו.</p>
+      <div class="sw"><i style="background:#E9EBEE"></i><i style="background:#FFFFFF"></i><i style="background:#111418"></i><i style="background:#14304A"></i><i style="background:#FFB21E"></i></div>
+    </div>
+    <div class="phone"><div class="scr pass">
+      <div class="status"><span>9:41</span><span>●●● 5G</span></div>
+      <div class="bar"><b>SEA.D.CHANGE</b><span>מיכל</span></div>
+      <div class="body">
+        <div class="tk">
+          <div class="top">
+            <div><div class="k">חניך</div><div class="v">שגב וינר</div></div>
+            <div><div class="k">מדריך</div><div class="v">דודי</div></div>
+            <div><div class="k">שעה</div><div class="v big" id="tkT">16:30</div></div>
+            <div><div class="k">תאריך</div><div class="v big" style="font-size:24px;padding-top:8px">12.11</div></div>
+            <div><div class="k">שירות</div><div class="v">פרטני · 45׳</div></div>
+            <div><div class="k">מקום</div><div class="v">בריכה א׳</div></div>
+          </div>
+          <div class="perf"><i></i></div>
+          <div class="stub"><span class="st" id="tkS"><svg class="ic" style="width:16px;height:16px"><use href="#i-check"/></svg>מאושר</span><span class="mono" style="font-size:12px;color:#5D6672">#0412</span><span class="bars" aria-hidden="true"></span></div>
+        </div>
+        <h3>הקרובים <span>3 שיעורים</span></h3>
+        <div class="board" role="table" aria-label="השיעורים הקרובים">
+          <div class="hd" role="row"><span>שעה</span><span>חניך</span><span>מדריך</span><span>סטטוס</span></div>
+          <div class="rw" role="row" id="rw1"><span class="t" id="rwT">16:30</span><span>שגב</span><span>דודי</span><span class="s g" id="rwS">מאושר</span></div>
+          <div class="rw" role="row"><span class="t">17:15</span><span>שגב</span><span>יעל</span><span class="s w">ממתין</span></div>
+          <div class="rw" role="row"><span class="t">16:30</span><span>שגב</span><span>דודי</span><span class="s w">ממתין</span></div>
+        </div>
+        <div class="mini">
+          <div class="mk"><b>שגב</b><span class="k">כרטיסייה</span><span class="v"><span id="cntC">7</span>/10</span></div>
+          <div class="mk"><b>דין</b><span class="k">בריאות</span><span class="alert"><svg class="ic" style="width:15px;height:15px"><use href="#i-alert"/></svg>טרם מולאה</span></div>
+        </div>
+        <button class="cta" type="button"><svg class="ic"><use href="#i-plus"/></svg>הזמנת שיעור</button>
+      </div>
+      <nav class="tabs"><a class="on" href="#"><svg class="ic"><use href="#i-home"/></svg>הבית שלי</a><a href="#"><svg class="ic"><use href="#i-kids"/></svg>הילדים</a><a href="#"><svg class="ic"><use href="#i-cal"/></svg>שיעורים</a><a href="#"><svg class="ic"><use href="#i-heart"/></svg>בריאות</a></nav>
+    </div></div>
+    <button class="demo" type="button" id="dC"><svg class="ic"><use href="#i-play"/></svg>הדגמה: המנהל שינה שעה</button>
+  </section>
+
+  <!-- D -->
+  <section class="dir" aria-labelledby="hD">
+    <div class="meta">
+      <span class="tag">כיוון ד׳ · הסטנדרט</span>
+      <h2 id="hD">אפליקציית הזמנות נקייה</h2>
+      <p>כמו האפליקציות הטובות בקטגוריה: כרטיסים לבנים, כחול ראשי, פס התקדמות. מלוטש, מוכר ובטוח, בלי אופי ייחודי.</p>
+      <div class="sw"><i style="background:#F3F7FC"></i><i style="background:#FFFFFF"></i><i style="background:#17324D"></i><i style="background:#1769B0"></i><i style="background:#D9E4EE"></i></div>
+    </div>
+    <div class="phone"><div class="scr canon" id="pD">
+      <div class="status"><span>9:41</span><span>●●● 5G</span></div>
+      <div class="bar"><b>SEA.D.CHANGE</b><svg class="ic"><use href="#i-user"/></svg></div>
+      <div class="body">
+        <h2>שלום, מיכל</h2>
+        <div class="card">
+          <div class="h"><span>השיעור הבא</span><span class="pill p-ok"><svg class="ic"><use href="#i-check"/></svg>מאושר</span></div>
+          <b>שגב · שיעור פרטני</b>
+          <div class="row"><span><svg class="ic" style="width:15px;height:15px"><use href="#i-cal"/></svg>יום ג׳ 12.11</span><span class="num"><svg class="ic" style="width:15px;height:15px"><use href="#i-clock"/></svg>16:30</span><span>דודי</span></div>
+        </div>
+        <div class="card" style="background:#FFF8EA;border-color:#F3DDAE">
+          <div class="kid"><svg class="ic" style="color:#A86A00"><use href="#i-heart"/></svg><div><b style="font-size:15px">הצהרת בריאות לדין</b><small>נדרשת לפני הזמנת שיעור</small></div></div>
+        </div>
+        <div class="card">
+          <div class="kid"><span class="av" style="background:#1769B0">ש</span><div style="flex:1"><b>שגב</b><small>גיל 9 · מתקדמים</small></div><span class="pill p-ok">בתוקף</span></div>
+          <div class="h"><span>כרטיסייה</span><span class="num"><span id="cntD">7</span>/10</span></div>
+          <div class="bar2"><i id="barD" style="width:70%;transition:width 500ms var(--e-out)"></i></div>
+        </div>
+        <div class="card">
+          <div class="kid"><span class="av" style="background:#7A8FA6">ד</span><div style="flex:1"><b>דין</b><small>גיל 8 · מתחילים</small></div><span class="pill p-wait">טרם מולאה</span></div>
+        </div>
+        <button class="cta" type="button" id="ctaD"><svg class="ic"><use href="#i-plus"/></svg>הזמנת שיעור</button>
+      </div>
+      <nav class="tabs"><a class="on" href="#"><svg class="ic"><use href="#i-home"/></svg>הבית שלי</a><a href="#"><svg class="ic"><use href="#i-kids"/></svg>הילדים</a><a href="#"><svg class="ic"><use href="#i-cal"/></svg>שיעורים</a><a href="#"><svg class="ic"><use href="#i-heart"/></svg>בריאות</a></nav>
+      <div class="toast" id="toastD" role="status"><svg class="ic"><use href="#i-check"/></svg>הבקשה נשלחה וממתינה לאישור</div>
+    </div></div>
+    <button class="demo" type="button" id="dD"><svg class="ic"><use href="#i-play"/></svg>הדגמה: שליחת בקשה</button>
+  </section>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // A: waterline drains one lesson, cycles back to 7
+  var a = 7, lvl = document.getElementById('lvlA'), cA = document.getElementById('cntA');
+  document.getElementById('dA').onclick = function(){
+    a = a > 1 ? a - 1 : 7; lvl.style.setProperty('--l', a*10); cA.textContent = a;
+    lvl.parentNode.setAttribute('aria-label','נותרו '+a+' מתוך 10 שיעורים');
+  };
+  // B: lane rope + floats
+  var rope = document.getElementById('ropeB'), cols=['#fff','#E2443A','#fff','#F4C21B'];
+  for (var i=0;i<60;i++){var f=document.createElement('i');f.style.background=cols[i%4];rope.appendChild(f);}
+  var fl = document.getElementById('flB'), b = 7, cB = document.getElementById('cntB');
+  for (var j=0;j<10;j++){var k=document.createElement('i'); if(j<7)k.className='on'; fl.appendChild(k);}
+  document.getElementById('dB').onclick = function(){
+    var kids = fl.children; if (b===0){ for(var n=0;n<7;n++)kids[n].className='on'; b=7; }
+    else { b--; var t=kids[b]; t.className='pop'; }
+    cB.textContent = b; fl.setAttribute('aria-label','נותרו '+b+' מתוך 10 שיעורים');
+  };
+  // C: flip time, amber stays until clicked
+  var rw = document.getElementById('rw1'), rT=document.getElementById('rwT'), rS=document.getElementById('rwS'),
+      tT=document.getElementById('tkT'), tS=document.getElementById('tkS'), alt=false;
+  function flip(el, txt){ el.textContent = txt; if(!reduce){ el.classList.remove('flip'); void el.offsetWidth; el.classList.add('flip'); } }
+  document.getElementById('dC').onclick = function(){
+    alt=!alt; var t = alt?'17:00':'16:30';
+    flip(rT,t); flip(tT,t); flip(rS, alt?'עודכן':'מאושר');
+    rS.className = 's '+(alt?'a':'g'); rw.classList.toggle('chg', alt);
+    tS.style.color = alt?'#9A5D00':''; tS.lastChild.textContent = alt?'השעה עודכנה':'מאושר';
+  };
+  rw.onclick = function(){ if(!rw.classList.contains('chg')) return; rw.classList.remove('chg'); rS.className='s g'; flip(rS,'מאושר'); };
+  // D: toast
+  var to = document.getElementById('toastD'), tm;
+  function toast(){ to.classList.add('show'); clearTimeout(tm); tm=setTimeout(function(){to.classList.remove('show')},2600); }
+  document.getElementById('dD').onclick = toast; document.getElementById('ctaD').onclick = toast;
+})();
+</script>
