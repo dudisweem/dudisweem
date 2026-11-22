@@ -31,3 +31,4 @@ label.chip{position:relative}
 label.chip input{position:absolute;opacity:0;pointer-events:none}
 label.chip:has(input:checked){background:var(--navy);color:#fff;box-shadow:none}
 label.chip:has(input:focus-visible){outline:2px solid var(--w2);outline-offset:2px}
+.danger-zone{border-top:1px solid var(--line);padding-top:12px}

@@ -10,7 +10,7 @@ import { Icon } from "@/ui/Icon";
 import { SubmitButton } from "@/ui/SubmitButton";
 import { ConfirmButton } from "@/ui/admin/ConfirmButton";
 import { Flash } from "../_lib/Flash";
-import { setActive, setRole, updateUser } from "./actions";
+import { deleteUser, sendResetLink, setActive, setRole, updateUser } from "./actions";
 
 export const metadata: Metadata = { title: "משתמשים" };
 
@@ -147,6 +147,31 @@ export default async function UsersPage({ searchParams }: PageProps<"/admin/user
                   ) : (
                     <SubmitButton variant="solid" sm>הפעלת החשבון מחדש</SubmitButton>
                   )}
+                </form>
+              ) : null}
+
+              <form action={sendResetLink}>
+                <input type="hidden" name="email" value={u.email} />
+                <input type="hidden" name="back" value={back} />
+                <SubmitButton variant="ghost" sm pendingLabel="שולחים…">
+                  <Icon name="mail" small />
+                  שליחת קישור לאיפוס סיסמה
+                </SubmitButton>
+              </form>
+
+              {!u.is_owner && u.id !== me.id ? (
+                <form action={deleteUser} className="danger-zone">
+                  <input type="hidden" name="id" value={u.id} />
+                  <ConfirmButton
+                    question={
+                      kidCount.get(u.id)
+                        ? `למחוק לצמיתות את ${u.full_name || u.email}? יימחקו גם ${kidCount.get(u.id)} הילדים, השיעורים והכרטיסיות שלהם. אי אפשר לשחזר.`
+                        : `למחוק לצמיתות את ${u.full_name || u.email}? אי אפשר לשחזר.`
+                    }
+                    confirmLabel="מחיקה לצמיתות"
+                  >
+                    מחיקת משתמש
+                  </ConfirmButton>
                 </form>
               ) : null}
             </div>

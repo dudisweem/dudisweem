@@ -441,3 +441,14 @@ select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50
 details.surf>summary{cursor:pointer;list-style:none;padding:16px;font-weight:800;display:flex;justify-content:space-between;align-items:center}
 details.surf>summary::-webkit-details-marker{display:none}
 details.surf[open]>summary{border-bottom:1px solid var(--line)}
+
+/* ---------- form guard: missing fields ---------- */
+.invalid>label,.invalid>.lab,fieldset.invalid>legend,.ck.invalid,.q.invalid .qt{color:var(--bad)!important}
+.invalid .inp,.inp[aria-invalid="true"]{box-shadow:inset 0 0 0 2px var(--bad)!important;background:#FFF8F7}
+.invalid .radio-chips span{box-shadow:inset 0 0 0 2px #F0C4BF}
+.guard-msg{display:flex;gap:5px;align-items:center;font-size:13px;font-weight:700;color:var(--bad)}
+.guard-msg::before{content:"!";width:16px;height:16px;border-radius:50%;background:var(--bad);color:#fff;font-size:11px;display:grid;place-items:center;flex:none}
+.ck.invalid{flex-wrap:wrap}
+.ck.invalid .guard-msg{flex-basis:100%;padding-inline-start:32px}
+fieldset.invalid,.field.invalid{animation:nudge 360ms var(--e-out)}
+@keyframes nudge{20%{transform:translateX(-5px)}60%{transform:translateX(4px)}}

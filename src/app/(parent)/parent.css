@@ -5,8 +5,13 @@
 .kidline{display:flex;align-items:center;gap:12px;padding:14px 16px;text-decoration:none;color:inherit;transition:background 200ms ease}
 @media (hover:hover) and (pointer:fine){.kidline:hover{background:#F5FAFC}}
 .kidline .ribbonv{width:6px;align-self:stretch;border-radius:6px;flex:none}
-.hq{display:grid;gap:10px;padding:16px}
-.hq legend{font-weight:800;font-size:15.5px;display:flex;gap:10px;padding:0;margin-bottom:8px}
+fieldset.hq{border:0;margin:0;min-width:0;display:block;padding:16px}
+fieldset.hq>*+*{margin-top:10px}
+/* legend floated so a long, wrapping question never sits on the row divider */
+fieldset.hq>legend{float:right;width:100%}
+fieldset.hq>legend+*{clear:both;margin-top:0}
+fieldset.hq>span{display:block}
+.hq legend{font-weight:800;font-size:15.5px;line-height:1.35;display:flex;gap:10px;padding:0;margin:0 0 10px}
 .hq legend span{font:700 22px/.9 var(--f-num);color:var(--w2);min-width:16px}
 .hq fieldset{border:0;margin:0;padding:0;min-width:0}
 .radio-chips{display:flex;flex-wrap:wrap;gap:8px}

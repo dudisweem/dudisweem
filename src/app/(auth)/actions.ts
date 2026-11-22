@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { createMailerClient } from "@/lib/supabase/implicit";
 import { homeFor } from "@/lib/auth";
 import type { Role } from "@/domain/labels";
 
@@ -61,12 +62,12 @@ export async function signUp(_: AuthState, fd: FormData): Promise<AuthState> {
   const fields = { full_name: raw.full_name ?? "", phone: raw.phone ?? "", email: raw.email ?? "" };
   if (!parsed.success) return { error: parsed.error.issues[0]!.message, fields };
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({
+  // implicit-flow mailer so the confirmation link works from any browser/app
+  const { data, error } = await createMailerClient().auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${await origin()}/auth/callback`,
+      emailRedirectTo: `${await origin()}/auth/hash`,
       data: { full_name: parsed.data.full_name, phone: parsed.data.phone.replace(/[^\d+]/g, "") },
     },
   });
@@ -74,7 +75,12 @@ export async function signUp(_: AuthState, fd: FormData): Promise<AuthState> {
     const msg = error.code === "weak_password" ? "הסיסמה חלשה מדי. נסו סיסמה ארוכה יותר." : error.code === "over_email_send_rate_limit" ? "יותר מדי ניסיונות. נסו שוב בעוד כמה דקות." : "לא הצלחנו ליצור חשבון. נסו שוב.";
     return { error: msg, fields };
   }
-  if (data.session) redirect("/home");
+  if (data.session) {
+    // email confirmation disabled: move the session into our cookies
+    const supabase = await createClient();
+    await supabase.auth.setSession({ access_token: data.session.access_token, refresh_token: data.session.refresh_token });
+    redirect("/home");
+  }
   // neutral: same message whether or not the email already exists
   return { ok: "שלחנו מייל אישור. לחצו על הקישור במייל כדי להפעיל את החשבון." };
 }
@@ -96,8 +102,8 @@ export async function signInWithGoogle(fd: FormData) {
 export async function forgotPassword(_: AuthState, fd: FormData): Promise<AuthState> {
   const parsed = email.safeParse(fd.get("email"));
   if (!parsed.success) return { error: "כתובת מייל לא תקינה" };
-  const supabase = await createClient();
-  await supabase.auth.resetPasswordForEmail(parsed.data, { redirectTo: `${await origin()}/auth/callback?next=/reset` });
+  // implicit-flow link: works even when opened in another browser or the Gmail app
+  await createMailerClient().auth.resetPasswordForEmail(parsed.data, { redirectTo: `${await origin()}/auth/hash` });
   return { ok: "אם המייל רשום אצלנו, שלחנו אליו קישור לאיפוס סיסמה." };
 }
 

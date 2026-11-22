@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Assistant, Karantina } from "next/font/google";
 import "./globals.css";
+import { FormGuard } from "@/ui/FormGuard";
+import { AuthHashHandler } from "@/ui/AuthHashHandler";
 
 const assistant = Assistant({ subsets: ["hebrew", "latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-assistant" });
 const karantina = Karantina({ subsets: ["hebrew", "latin"], weight: ["400", "700"], variable: "--font-karantina" });
@@ -21,7 +23,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="he" dir="rtl" className={`${assistant.variable} ${karantina.variable}`}>
-      <body>{children}</body>
+      <body>
+        <FormGuard />
+        <AuthHashHandler />
+        {children}
+      </body>
     </html>
   );
 }
