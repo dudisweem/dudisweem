@@ -70,15 +70,28 @@ export function PayNow({ method, amount, bitPhone, bitLink, payboxLink }: { meth
     );
   }
 
-  // links.payboxapp.com is PayBox's verified App Link (assetlinks → com.payboxapp) and
-  // iOS Universal Link domain for every path, so a tap opens the installed app.
+  // PayBox — same flow as Bit: copy the payment number, then open the app.
+  // links.payboxapp.com is PayBox's verified App Link (assetlinks → com.payboxapp) and iOS
+  // Universal Link domain; it stays a real <a> tap so iOS hands it to the app.
+  const copyPhone = () => {
+    if (bitPhone) navigator.clipboard?.writeText(bitPhone).then(() => setCopied(true), () => setCopied(false));
+  };
   return (
     <div className="stack-s" style={{ width: "100%" }}>
-      <a className="btn primary full" href={PAYBOX_APP}>
+      <a className="btn primary full" href={PAYBOX_APP} onClick={copyPhone}>
         <Icon name="wallet" />
         פתיחת PayBox · {fmtMoney(amount)}
       </a>
-      <small className="muted">תשלום של {shekels} ₪ ב־PayBox. פרטי ההעברה יישלחו מבית הספר.</small>
+      <small className="muted" role="status">
+        {copied ? "המספר הועתק. " : ""}
+        {bitPhone ? (
+          <>
+            העבירו ב־PayBox למספר <b dir="ltr" className="num">{bitPhone}</b> סך <b className="num">{shekels} ₪</b>.
+          </>
+        ) : (
+          <>העבירו ב־PayBox {shekels} ₪. פרטי ההעברה יישלחו מבית הספר.</>
+        )}
+      </small>
     </div>
   );
 }

@@ -96,7 +96,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
             <Toggle name="payment_card" label="כרטיסייה" hint="ניקוב מכרטיסייה בעת ההזמנה" on={s.payment_card} />
           </div>
           <div className="cols2">
-            <Text name="bit_phone" label="מספר לתשלום ב־Bit" value={s.bit_phone} ltr type="tel" />
+            <Text name="bit_phone" label="מספר טלפון לתשלום (Bit ו־PayBox)" value={s.bit_phone} ltr type="tel" />
             <Text name="paybox_link" label="קישור PayBox (https)" value={s.paybox_link} ltr type="url" />
             <Text name="bit_link" label="קישור תשלום Bit (לא חובה, https)" value={s.bit_link ?? ""} ltr type="url" />
           </div>
