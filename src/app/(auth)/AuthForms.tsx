@@ -23,6 +23,9 @@ function GoogleButton({ next }: { next?: string }) {
   );
 }
 
+// Facebook login is built but hidden until the Meta app is set up in Supabase.
+const FACEBOOK_ENABLED = false;
+
 function FacebookButton({ next }: { next?: string }) {
   return (
     <form action={signInWithFacebook}>
@@ -41,7 +44,7 @@ function SocialButtons({ next }: { next?: string }) {
   return (
     <div className="stack-s">
       <GoogleButton next={next} />
-      <FacebookButton next={next} />
+      {FACEBOOK_ENABLED ? <FacebookButton next={next} /> : null}
     </div>
   );
 }
