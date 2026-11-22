@@ -19,8 +19,8 @@ export default async function HealthPage({ params }: PageProps<"/kids/[id]/healt
     .from("students")
     .select("id, parent_id, first_name, last_name, birth_date, color, health_signed_at")
     .eq("id", id)
-    .eq("parent_id", me.id)
     .maybeSingle();
+  // owner parent or accepted guardian (RLS also lets admins read; sign_health rejects them)
   if (!kid) notFound();
   const settings = await getSettings();
   const age = ageFrom(kid.birth_date);

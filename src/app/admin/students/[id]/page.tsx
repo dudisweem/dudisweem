@@ -17,6 +17,21 @@ export const metadata: Metadata = { title: "תלמיד" };
 
 const GENDER: Record<string, string> = { m: "בן", f: "בת", other: "אחר" };
 
+type HealthAnswers = {
+  answers?: Record<string, { answer: "yes" | "no"; details: string }>;
+  fit?: "fit" | "unfit";
+  extra?: string;
+  photos?: boolean;
+};
+const HEALTH_Q: Record<string, string> = {
+  heart: "בעיית לב / לחץ דם / התעלפויות:",
+  asthma: "אסתמה / קושי נשימתי:",
+  epilepsy: "אפילפסיה / פרכוסים:",
+  surgery: "ניתוח / פציעה / אשפוז בשנה האחרונה:",
+  meds: "תרופות קבועות:",
+  other: "מגבלה נוספת:",
+};
+
 export default async function StudentDetail({ params, searchParams }: PageProps<"/admin/students/[id]">) {
   const { id } = await params;
   const sp = await searchParams;
@@ -32,7 +47,7 @@ export default async function StudentDetail({ params, searchParams }: PageProps<
   if (!s) notFound();
   const parent = s.parent as unknown as { id: string; full_name: string; phone: string; email: string } | null;
 
-  const [creditsRes, bookingsRes, packagesRes, siblingsRes] = await Promise.all([
+  const [creditsRes, bookingsRes, packagesRes, siblingsRes, medicalRes, guardiansRes, signatureRes] = await Promise.all([
     supabase.from("credits").select("*, package:packages ( name ), service:services ( name )").eq("student_id", id).order("created_at", { ascending: false }),
     supabase
       .from("bookings")
@@ -42,7 +57,17 @@ export default async function StudentDetail({ params, searchParams }: PageProps<
       .limit(100),
     supabase.from("packages").select("id, name, lessons, price_agorot, validity_days").eq("active", true).order("name"),
     parent ? supabase.from("students").select("id, first_name, color").eq("parent_id", parent.id).neq("id", id) : Promise.resolve({ data: [] }),
+    // medical fields are encrypted at rest; this RPC decrypts for admins / owner / guardians only
+    supabase.rpc("get_student_medical", { p_student: id }),
+    supabase.rpc("kid_guardians", { p_student: id }),
+    // private bucket: short-lived signed URL, never a public link
+    s.health_signature_path
+      ? supabase.storage.from("signatures").createSignedUrl(s.health_signature_path as string, 120)
+      : Promise.resolve({ data: null }),
   ]);
+  const medical = ((medicalRes.data ?? []) as { allergies: string; medical_notes: string; health_answers: HealthAnswers | null }[])[0];
+  const guardians = (guardiansRes.data ?? []) as { id: string; invited_email: string; full_name: string; accepted: boolean }[];
+  const signatureUrl = (signatureRes.data as { signedUrl?: string } | null)?.signedUrl ?? null;
   const credits = (creditsRes.data ?? []) as unknown as {
     id: string; lessons_total: number; lessons_used: number; expires_at: string | null; paid: boolean; note: string; created_at: string;
     package: { name: string } | null; service: { name: string } | null;
@@ -59,7 +84,7 @@ export default async function StudentDetail({ params, searchParams }: PageProps<
   const health = healthValid(s.health_signed_at, settings.health_validity_months, settings.health_required);
   const completed = bookings.filter((b) => b.status === "completed").length;
   const upcoming = bookings.filter((b) => ["pending", "approved"].includes(b.status) && new Date(b.starts_at) > new Date()).length;
-  const answers = (s.health_answers ?? null) as Record<string, unknown> | null;
+  const answers = medical?.health_answers ?? null;
 
   return (
     <Shell
@@ -122,14 +147,33 @@ export default async function StudentDetail({ params, searchParams }: PageProps<
             {s.health_signed_at ? (
               <p className="small" style={{ margin: 0 }}>נחתם ב־{fmtDate(s.health_signed_at)} ע״י {s.health_signed_by}</p>
             ) : null}
-            {s.allergies ? <p style={{ margin: 0 }}><b>אלרגיות: </b>{s.allergies}</p> : null}
-            {s.medical_notes ? <p style={{ margin: 0 }}><b>הערות רפואיות: </b>{s.medical_notes}</p> : null}
-            {answers ? (
+            {medical?.allergies ? <p style={{ margin: 0 }}><b>אלרגיות: </b>{medical.allergies}</p> : null}
+            {medical?.medical_notes ? <p style={{ margin: 0 }}><b>הערות רפואיות: </b>{medical.medical_notes}</p> : null}
+            {answers?.answers ? (
               <ul className="health-list">
-                {Object.entries(answers).map(([k, v]) => (
-                  <li key={k}><b>{k}:</b> {typeof v === "boolean" ? (v ? "כן" : "לא") : String(v)}</li>
+                {Object.entries(answers.answers).map(([k, v]) => (
+                  <li key={k}>
+                    <b>{HEALTH_Q[k] ?? k}</b> {v.answer === "yes" ? <Pill kind="wait">כן</Pill> : <span className="muted">לא</span>}
+                    {v.answer === "yes" && v.details ? <div className="small">{v.details}</div> : null}
+                  </li>
                 ))}
+                {answers.fit ? <li><b>הצהרת כשירות:</b> {answers.fit === "fit" ? "כשיר/ה" : <Pill kind="bad">לא כשיר/ה — לבירור</Pill>}</li> : null}
+                {answers.extra ? <li><b>מידע נוסף:</b> {answers.extra}</li> : null}
+                {typeof answers.photos === "boolean" ? <li><b>פרסום תמונות:</b> {answers.photos ? "מסכימים" : "לא מסכימים"}</li> : null}
               </ul>
+            ) : null}
+            {signatureUrl ? (
+              <figure style={{ margin: 0 }} className="stack-s">
+                {/* eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL from a private bucket */}
+                <img src={signatureUrl} alt={`חתימת ${s.health_signed_by ?? "ההורה"}`} style={{ maxWidth: 320, width: "100%", background: "#fff", borderRadius: 12, boxShadow: "inset 0 0 0 1.5px var(--line)" }} />
+                <figcaption className="small muted">חתימה ביד · קישור זמני לשתי דקות</figcaption>
+              </figure>
+            ) : null}
+            {guardians.length ? (
+              <div className="small">
+                <b>הורים נוספים: </b>
+                {guardians.map((g) => `${g.full_name || g.invited_email}${g.accepted ? "" : " (ממתין)"}`).join(", ")}
+              </div>
             ) : null}
           </section>
 

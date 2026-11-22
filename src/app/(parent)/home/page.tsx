@@ -7,19 +7,21 @@ import { ageFrom, fmtDate, fmtTime, fmtShortDay, healthValid } from "@/domain/fo
 import { LEVEL_LABEL, STATUS } from "@/domain/labels";
 import { Avatar, Pill, Vessel, Alert } from "@/ui/primitives";
 import { Icon } from "@/ui/Icon";
-import { creditsLeft, firstName, getBookings, getInstructorNames, getMyCredits, getMyKids, greeting } from "../data";
+import { creditsLeft, firstName, getBookings, getInstructorNames, getMyCredits, getMyInvitations, getMyKids, greeting } from "../data";
+import { Invitations } from "@/ui/parent/Guardians";
 
 export const metadata: Metadata = { title: "בית" };
 
 export default async function ParentHome() {
   const me = await requireRole("parent", "admin", "instructor");
   const supabase = await createClient();
-  const [settings, kids, credits, instructors, { data: announcements }] = await Promise.all([
+  const [settings, kids, credits, instructors, { data: announcements }, invitations] = await Promise.all([
     getSettings(),
     getMyKids(me.id),
     getMyCredits(),
     getInstructorNames(),
     supabase.from("announcements").select("id, title, body, created_at").eq("active", true).order("created_at", { ascending: false }).limit(3),
+    getMyInvitations(),
   ]);
   const bookings = await getBookings(kids.map((k) => k.id));
   const now = new Date();
@@ -62,6 +64,8 @@ export default async function ParentHome() {
   return (
     <Shell roles={["parent", "admin", "instructor"]} head={head}>
       {!settings.booking_open ? <Alert kind="wait">{settings.closed_message}</Alert> : null}
+
+      <Invitations invitations={invitations} />
 
       {(announcements ?? []).map((a) => (
         <div key={a.id} className="surf pad lit row" style={{ alignItems: "flex-start" }}>

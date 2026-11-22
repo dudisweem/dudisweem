@@ -490,3 +490,8 @@ fieldset.invalid,.field.invalid{animation:nudge 360ms var(--e-out)}
 @keyframes swell{from{transform:translateY(6%)}to{transform:translateY(-4%)}}
 @media (prefers-reduced-motion:reduce){.poolwaves .pw,.poolwaves .caustics,.pc.now .wavebg{animation:none}}
 .fbbtn{background:#1877F2!important;color:#fff!important;box-shadow:none!important}
+/* legal pages */
+.legal h2{font:800 17px var(--f-ui);margin:22px 0 6px}
+.legal h2:first-child{margin-top:0}
+.legal p,.legal li{font-size:15px;line-height:1.7;color:#2C4A60;max-width:72ch}
+.legal ul{padding-inline-start:20px;margin:0}

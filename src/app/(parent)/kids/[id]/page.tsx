@@ -9,7 +9,8 @@ import { LEVEL_LABEL, STATUS } from "@/domain/labels";
 import { Alert, Pill, Vessel } from "@/ui/primitives";
 import { Icon } from "@/ui/Icon";
 import { KidForm } from "@/ui/parent/KidForm";
-import { getBookings, getInstructorNames, type Credit, type Kid } from "../../data";
+import { getBookings, getGuardians, getInstructorNames, getMedical, type Credit, type Kid } from "../../data";
+import { Guardians } from "@/ui/parent/Guardians";
 import { setKidActive } from "../../actions";
 import { ConfirmAction } from "@/ui/parent/ConfirmAction";
 
@@ -18,19 +19,22 @@ export const metadata: Metadata = { title: "כרטיס ילד" };
 export default async function KidPage({ params, searchParams }: PageProps<"/kids/[id]">) {
   const { id } = await params;
   const sp = await searchParams;
-  await requireRole("parent", "admin", "instructor");
+  const me = await requireRole("parent", "admin", "instructor");
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
   const supabase = await createClient();
-  // RLS: returns a row only when this parent is the guardian
+  // RLS: returns a row only for the owner parent, an accepted guardian, or an admin
   const { data: kidRow } = await supabase.from("students").select("*").eq("id", id).maybeSingle();
   if (!kidRow) notFound();
   const kid = kidRow as Kid;
-  const [settings, bookings, instructors, { data: creditRows }] = await Promise.all([
+  const [settings, bookings, instructors, { data: creditRows }, medical, guardians] = await Promise.all([
     getSettings(),
     getBookings([kid.id]),
     getInstructorNames(),
     supabase.from("credits").select("*").eq("student_id", kid.id).order("created_at", { ascending: false }),
+    getMedical(kid.id),
+    getGuardians(kid.id),
   ]);
+  const isOwner = kid.parent_id === me.id;
   const credits = (creditRows ?? []) as Credit[];
   const now = new Date();
   const upcoming = bookings.filter((b) => new Date(b.starts_at) > now && (b.status === "pending" || b.status === "approved"));
@@ -157,9 +161,11 @@ export default async function KidPage({ params, searchParams }: PageProps<"/kids
       <details className="surf">
         <summary>עריכת פרטים <Icon name="pen" small /></summary>
         <div className="pad">
-          <KidForm initial={kid} />
+          <KidForm initial={{ ...kid, allergies: medical.allergies, medical_notes: medical.medical_notes }} />
         </div>
       </details>
+
+      <Guardians studentId={kid.id} kidName={kid.first_name} guardians={guardians} isOwner={isOwner} />
 
       {ok && kid.health_signed_at ? (
         <p className="hint center" style={{ margin: 0 }}>
@@ -168,6 +174,8 @@ export default async function KidPage({ params, searchParams }: PageProps<"/kids
         </p>
       ) : null}
 
+      {isOwner ? (
+      <>
       <div className="row" style={{ justifyContent: "center" }}>
         <ConfirmAction
           action={setKidActive}
@@ -178,6 +186,8 @@ export default async function KidPage({ params, searchParams }: PageProps<"/kids
         />
       </div>
       <p className="hint center" style={{ marginTop: -8 }}>ההיסטוריה נשמרת. אפשר להחזיר בפנייה לבית הספר.</p>
+      </>
+      ) : null}
     </Shell>
   );
 }
