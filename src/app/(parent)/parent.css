@@ -1,0 +1,27 @@
+/* parent + instructor additions; shares the prototype world in globals.css */
+.kidsrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.kid{text-decoration:none}
+.kid .pill{justify-self:center}
+.kidline{display:flex;align-items:center;gap:12px;padding:14px 16px;text-decoration:none;color:inherit;transition:background 200ms ease}
+@media (hover:hover) and (pointer:fine){.kidline:hover{background:#F5FAFC}}
+.kidline .ribbonv{width:6px;align-self:stretch;border-radius:6px;flex:none}
+.hq{display:grid;gap:10px;padding:16px}
+.hq legend{font-weight:800;font-size:15.5px;display:flex;gap:10px;padding:0;margin-bottom:8px}
+.hq legend span{font:700 22px/.9 var(--f-num);color:var(--w2);min-width:16px}
+.hq fieldset{border:0;margin:0;padding:0;min-width:0}
+.radio-chips{display:flex;flex-wrap:wrap;gap:8px}
+.radio-chips label{position:relative}
+.radio-chips input{position:absolute;opacity:0;pointer-events:none}
+.radio-chips span{min-height:42px;padding:0 18px;border-radius:13px;background:var(--surf);box-shadow:inset 0 0 0 1.5px var(--line);font-weight:700;font-size:14.5px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:background 200ms ease,color 200ms ease}
+.radio-chips input:checked+span{background:var(--navy);color:#fff;box-shadow:none}
+.radio-chips input:focus-visible+span{outline:2px solid var(--w2);outline-offset:2px}
+.lessonrow{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:14px 16px;align-items:center}
+.lessonrow .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+@container app (min-width:640px){.lessonrow{grid-template-columns:auto 1fr auto}.lessonrow .acts{grid-column:auto;justify-content:flex-end}}
+.confirm-inline{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--bad-bg);color:var(--bad);border-radius:14px;padding:8px 10px;font-weight:700;font-size:13.5px}
+.daylabel{font-size:12.5px;font-weight:700;color:var(--mut)}
+.wd-nav{display:flex;align-items:center;gap:8px}
+.wd-nav a{min-width:44px;min-height:44px;display:grid;place-items:center;border-radius:12px;background:rgba(169,216,235,.16);color:#fff;text-decoration:none}
+.paylink{word-break:break-all;direction:ltr;text-align:right}
+.stepper-foot{bottom:calc(70px + env(safe-area-inset-bottom,0px));margin-inline:-16px}
+@container app (min-width:760px){.stepper-foot{bottom:0;margin-inline:0}}
