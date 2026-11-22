@@ -5,16 +5,17 @@ import { fmtMoney } from "@/domain/format";
 
 // Neither Bit nor PayBox publish a deep link that pre-fills a private transfer.
 // Best effort: a configured payment link wins; otherwise on Android we launch the app
-// by package (Chrome intent URL, falling back to Google Play if it isn't installed);
-// on iPhone/desktop we copy the number and show exact instructions.
+// through Google Play; on iPhone/desktop we copy the number and show exact instructions.
 const APPS = {
-  bit: { label: "Bit", pkg: "com.bnhp.payments.paymentsapp", play: "bit ביט" },
-  paybox: { label: "PayBox", pkg: "com.payboxapp", play: "PayBox" },
+  bit: { label: "Bit", pkg: "com.bnhp.payments.paymentsapp" },
+  paybox: { label: "PayBox", pkg: "com.payboxapp" },
 } as const;
 
-function intentUrl(pkg: string, playQuery: string) {
-  const fallback = encodeURIComponent(`https://play.google.com/store/search?q=${encodeURIComponent(playQuery)}&c=apps`);
-  return `intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=${pkg};S.browser_fallback_url=${fallback};end`;
+// Chrome adds CATEGORY_BROWSABLE to intent: URLs and an app launcher screen does not accept
+// it, so those always fell back to Play. Asking Google Play to launch the package opens the
+// app when it is installed, and its store page when it is not.
+function launchUrl(pkg: string) {
+  return `market://launch?id=${pkg}`;
 }
 
 const subscribe = () => () => {};
@@ -45,7 +46,7 @@ export function PayNow({ method, amount, bitPhone, bitLink, payboxLink }: { meth
         // clipboard blocked: number stays visible below
       }
     }
-    if (android) window.location.href = intentUrl(app.pkg, app.play);
+    if (android) window.location.href = launchUrl(app.pkg);
   };
 
   return (
