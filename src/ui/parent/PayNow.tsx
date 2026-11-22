@@ -7,12 +7,12 @@ import { fmtMoney } from "@/domain/format";
 // - Bit registers native schemes (unofficial, reported by integrators): Android scheme "bit"
 //   on package com.bnhp.payments.paymentsapp, iOS "paymentsBIT://". These open Bit itself;
 //   no public format pre-fills the payee/amount, so we copy the number first.
-// - PayBox publishes no scheme or app links (payboxapp.com has no assetlinks), so only a
-//   PayBox share link opens it.
+// - PayBox: links.payboxapp.com is a verified App Link / Universal Link domain for the app.
 // - A configured payment link (PayBox share link / Bit business link) always wins.
 const LABEL = { bit: "Bit", paybox: "PayBox" } as const;
 const BIT_ANDROID = "intent://open#Intent;scheme=bit;package=com.bnhp.payments.paymentsapp;end";
 const BIT_IOS = "paymentsBIT://";
+const PAYBOX_APP = "https://links.payboxapp.com/";
 
 type Platform = "android" | "ios" | "other";
 const subscribe = () => () => {};
@@ -70,9 +70,15 @@ export function PayNow({ method, amount, bitPhone, bitLink, payboxLink }: { meth
     );
   }
 
+  // links.payboxapp.com is PayBox's verified App Link (assetlinks → com.payboxapp) and
+  // iOS Universal Link domain for every path, so a tap opens the installed app.
   return (
-    <small className="muted">
-      תשלום של {shekels} ₪ ב־PayBox. פרטי ההעברה יישלחו מבית הספר.
-    </small>
+    <div className="stack-s" style={{ width: "100%" }}>
+      <a className="btn primary full" href={PAYBOX_APP}>
+        <Icon name="wallet" />
+        פתיחת PayBox · {fmtMoney(amount)}
+      </a>
+      <small className="muted">תשלום של {shekels} ₪ ב־PayBox. פרטי ההעברה יישלחו מבית הספר.</small>
+    </div>
   );
 }
