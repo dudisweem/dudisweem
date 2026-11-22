@@ -1,30 +1,16 @@
 "use client";
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { Icon } from "@/ui/Icon";
 import { fmtMoney } from "@/domain/format";
 
-// Neither Bit nor PayBox publish a deep link that pre-fills a private transfer.
-// Best effort: a configured payment link wins; otherwise on Android we launch the app
-// through Google Play; on iPhone/desktop we copy the number and show exact instructions.
-const APPS = {
-  bit: { label: "Bit", pkg: "com.bnhp.payments.paymentsapp" },
-  paybox: { label: "PayBox", pkg: "com.payboxapp" },
-} as const;
-
-// Chrome adds CATEGORY_BROWSABLE to intent: URLs and an app launcher screen does not accept
-// it, so those always fell back to Play. Asking Google Play to launch the package opens the
-// app when it is installed, and its store page when it is not.
-function launchUrl(pkg: string) {
-  return `market://launch?id=${pkg}`;
-}
-
-const subscribe = () => () => {};
-const isAndroidNow = () => /android/i.test(navigator.userAgent);
+// Browsers can't open Bit/PayBox without a payment link issued by them (tested on Android:
+// intent: and market://launch URLs are blocked or fall back to Play). So:
+// - a configured payment link (PayBox share link / Bit business link) opens the app directly;
+// - otherwise we never show a dead button: Bit copies the number, PayBox shows instructions.
+const LABEL = { bit: "Bit", paybox: "PayBox" } as const;
 
 export function PayNow({ method, amount, bitPhone, bitLink, payboxLink }: { method: "bit" | "paybox"; amount: number; bitPhone: string; bitLink: string; payboxLink: string }) {
-  const [copied, setCopied] = useState(false);
-  const android = useSyncExternalStore(subscribe, isAndroidNow, () => false);
-  const app = APPS[method];
+  const [copied, setCopied] = useState<"ok" | "fail" | null>(null);
   const link = method === "bit" ? bitLink : payboxLink;
   const shekels = (amount / 100).toString();
 
@@ -32,40 +18,37 @@ export function PayNow({ method, amount, bitPhone, bitLink, payboxLink }: { meth
     return (
       <a className="btn primary full" href={link} target="_blank" rel="noopener noreferrer">
         <Icon name="wallet" />
-        תשלום {fmtMoney(amount)} ב־{app.label}
+        תשלום {fmtMoney(amount)} ב־{LABEL[method]}
       </a>
     );
   }
 
-  const open = async () => {
-    if (bitPhone && method === "bit") {
+  if (method === "bit" && bitPhone) {
+    const copy = async () => {
       try {
         await navigator.clipboard.writeText(bitPhone);
-        setCopied(true);
+        setCopied("ok");
       } catch {
-        // clipboard blocked: number stays visible below
+        setCopied("fail");
       }
-    }
-    if (android) window.location.href = launchUrl(app.pkg);
-  };
+    };
+    return (
+      <div className="stack-s" style={{ width: "100%" }}>
+        <button type="button" className="btn primary full" onClick={copy}>
+          <Icon name={copied === "ok" ? "check" : "wallet"} />
+          {copied === "ok" ? "המספר הועתק" : "העתקת מספר ה־Bit"}
+        </button>
+        <small className="muted" role="status">
+          {copied === "ok" ? "עכשיו פתחו את Bit, הדביקו את המספר ושלחו " : "העבירו ב־Bit למספר "}
+          <b dir="ltr" className="num">{bitPhone}</b> סך <b className="num">{shekels} ₪</b>.
+        </small>
+      </div>
+    );
+  }
 
   return (
-    <div className="stack-s" style={{ width: "100%" }}>
-      <button type="button" className="btn primary full" onClick={open}>
-        <Icon name="wallet" />
-        {android ? `פתיחת ${app.label} · ${fmtMoney(amount)}` : method === "bit" && bitPhone ? "העתקת מספר ה־Bit" : `תשלום ב־${app.label}`}
-      </button>
-      <small className="muted">
-        {copied ? "המספר הועתק. " : ""}
-        {method === "bit" && bitPhone ? (
-          <>
-            ב־Bit: העברה למספר <b dir="ltr" className="num">{bitPhone}</b> בסך <b className="num">{shekels} ₪</b>.
-          </>
-        ) : (
-          <>פתחו את {app.label} ושלחו {shekels} ₪. פרטי ההעברה יישלחו מבית הספר.</>
-        )}
-        {!android ? ` באייפון: פתחו את אפליקציית ${app.label} ידנית.` : ""}
-      </small>
-    </div>
+    <small className="muted">
+      תשלום של {shekels} ₪ ב־{LABEL[method]}. פרטי ההעברה יישלחו מבית הספר.
+    </small>
   );
 }
