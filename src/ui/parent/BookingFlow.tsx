@@ -430,6 +430,7 @@ export function BookingFlow(props: {
         </div>
         <p className="hint" style={{ margin: 0 }}>
           {props.requireApproval ? "המועד נשמר לכם מרגע השליחה וממתין לאישור המנהל." : "השיעור נקבע מיד עם השליחה."}
+          {payment === "bit" || payment === "paybox" ? ` אחרי השליחה יופיע כפתור לתשלום ב־${PAYMENT_LABEL[payment]}.` : ""}
         </p>
         {status === "error" && errCode ? (
           <Alert kind="bad">
