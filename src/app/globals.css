@@ -132,7 +132,7 @@ a{color:inherit}
 @container app (min-width:560px){.grid2{grid-template-columns:1fr 1fr}}
 
 /* forms */
-.field{display:grid;gap:6px}
+.field{display:grid;gap:6px;align-content:start}
 .field label,.field .lab{font-weight:700;font-size:14.5px}
 .field .req{color:var(--bad)}
 .inp,textarea.inp{width:100%;min-height:48px;border-radius:14px;border:0;background:var(--surf);box-shadow:inset 0 0 0 1.5px var(--line);padding:12px 14px;font-size:15.5px;transition:box-shadow 200ms ease}
@@ -385,7 +385,7 @@ textarea.inp{min-height:84px;resize:vertical}
 select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),linear-gradient(135deg,var(--mut) 50%,transparent 50%);background-position:16px 21px,22px 21px;background-size:6px 6px;background-repeat:no-repeat;padding-inline-start:36px}
 .stack{display:grid;gap:14px}
 .stack-s{display:grid;gap:8px}
-.cols2{display:grid;gap:14px}
+.cols2{display:grid;gap:14px;align-items:start}
 @container app (min-width:640px){.cols2{grid-template-columns:1fr 1fr}}
 .cols3{display:grid;gap:14px}
 @container app (min-width:760px){.cols3{grid-template-columns:repeat(3,1fr)}}
