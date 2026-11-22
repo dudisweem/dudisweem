@@ -50,6 +50,7 @@ export default async function WorkdayPage({ searchParams }: PageProps<"/workday"
               <Link href={`/workday?day=${addDays(day, -1)}`} aria-label="יום קודם"><Icon name="right" /></Link>
               {day !== today ? <Link href="/workday" style={{ minWidth: 0, padding: "0 12px", fontWeight: 700 }}>היום</Link> : null}
               <Link href={`/workday?day=${addDays(day, 1)}`} aria-label="יום הבא"><Icon name="left" /></Link>
+              <Link href="/pool" style={{ minWidth: 0, padding: "0 12px", fontWeight: 700, gap: 6, display: "flex", alignItems: "center" }}><Icon name="waves" small />מסך בריכה</Link>
             </span>
           </div>
         </>

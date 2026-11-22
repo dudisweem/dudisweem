@@ -13,6 +13,7 @@ const CARDS: { href: string; icon: IconName; title: string; text: string }[] = [
   { href: "/admin/packages", icon: "card", title: "כרטיסיות", text: "חבילות שיעורים: כמות, מחיר ותוקף" },
   { href: "/admin/payments", icon: "wallet", title: "תשלומים", text: "מה שולם ומה פתוח, סיכום חודשי" },
   { href: "/admin/announcements", icon: "flag", title: "הודעות להורים", text: "עדכונים שמופיעים בדף הבית של ההורים" },
+  { href: "/pool", icon: "waves", title: "מסך בריכה", text: "תצוגה לטאבלט או מסך גדול: השיעור הקודם, מי עכשיו במים ומי הבא" },
 ];
 
 export default function ManageHub() {
