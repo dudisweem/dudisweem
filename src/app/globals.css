@@ -467,3 +467,25 @@ fieldset.invalid,.field.invalid{animation:nudge 360ms var(--e-out)}
 @container pool (max-width:859px){.pc.now{order:-1}}
 .who .pool-link{background:rgba(169,216,235,.16);color:#fff;border-radius:12px;padding:0 12px;min-height:40px}
 @container app (max-width:520px){.who>span{display:none}}
+
+/* ---------- pool display: animated water ---------- */
+.pool{isolation:isolate}
+.pool>.ph,.pool>.pcols{position:relative;z-index:1}
+.poolwaves{position:fixed;inset:auto 0 0 0;height:34vh;pointer-events:none;z-index:0;overflow:hidden}
+.poolwaves .pw{position:absolute;bottom:0;left:0;width:200%;will-change:transform}
+.poolwaves .pw path{fill:currentColor}
+.poolwaves .w3{height:78%;color:rgba(29,110,158,.20);animation:pwdrift 26s linear infinite}
+.poolwaves .w2{height:60%;color:rgba(93,180,218,.16);animation:pwdrift 17s linear infinite reverse}
+.poolwaves .w1{height:42%;color:rgba(169,216,235,.14);animation:pwdrift 11s linear infinite}
+@keyframes pwdrift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.poolwaves .caustics{position:absolute;inset:-20% -10% 0;opacity:.35;
+  background:
+    radial-gradient(ellipse 22% 10% at 20% 70%,rgba(169,216,235,.18),transparent 70%),
+    radial-gradient(ellipse 18% 8% at 55% 80%,rgba(169,216,235,.14),transparent 70%),
+    radial-gradient(ellipse 25% 9% at 85% 65%,rgba(169,216,235,.16),transparent 70%);
+  animation:caust 9s ease-in-out infinite alternate}
+@keyframes caust{from{transform:translate3d(-3%,0,0) scale(1)}to{transform:translate3d(3%,-4%,0) scale(1.08)}}
+/* the live card breathes with a slow surface swell */
+.pc.now .wavebg{animation:swell 6s ease-in-out infinite alternate}
+@keyframes swell{from{transform:translateY(6%)}to{transform:translateY(-4%)}}
+@media (prefers-reduced-motion:reduce){.poolwaves .pw,.poolwaves .caustics,.pc.now .wavebg{animation:none}}

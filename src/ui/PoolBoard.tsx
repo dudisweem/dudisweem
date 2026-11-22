@@ -38,6 +38,24 @@ function group(rows: PoolRow[]): Session[] {
   return [...map.values()].sort((a, b) => a.start - b.start || a.instructor.localeCompare(b.instructor, "he"));
 }
 
+const WAVE_PATH = "M0 30 C 100 10, 200 10, 300 30 S 500 50, 600 30 S 800 10, 900 30 S 1100 50, 1200 30 V80 H0 Z";
+
+/** Layered water at the bottom of the pool screen: three depths drifting at different
+ *  speeds, plus slow light caustics. Transform-only animation; still under reduced motion. */
+function PoolWaves() {
+  return (
+    <div className="poolwaves" aria-hidden="true">
+      <div className="caustics" />
+      {(["w3", "w2", "w1"] as const).map((k) => (
+        <svg key={k} className={`pw ${k}`} viewBox="0 0 1200 80" preserveAspectRatio="none">
+          <path d={WAVE_PATH} />
+          <path d={WAVE_PATH} transform="translate(1200 0)" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
 function Kids({ s }: { s: Session }) {
   return (
     <div className="kids">
@@ -101,6 +119,7 @@ export function PoolBoard({ initial, backHref }: { initial: { rows: PoolRow[]; a
   const nowDate = new Date(now);
   return (
     <div className="pool">
+      <PoolWaves />
       <div className="ph">
         <div>
           <span className="brand" style={{ color: "#A9D8EB" }}>SWEEMER</span>
