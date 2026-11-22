@@ -55,6 +55,7 @@ export type Settings = {
   slot_step_min: number;
   buffer_min: number;
   require_approval: boolean;
+  instructor_availability_approval: boolean;
   max_lessons_per_week_per_student: number;
   health_required: boolean;
   health_validity_months: number;
@@ -65,6 +66,10 @@ export type Settings = {
   bit_phone: string;
   paybox_link: string;
   bit_link: string;
+  email_admin_new_request?: boolean;
+  email_parent_status?: boolean;
+  email_reminders?: boolean;
+  email_waitlist?: boolean;
   booking_open: boolean;
   closed_message: string;
 };

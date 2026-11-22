@@ -12,6 +12,8 @@ const CARDS: { href: string; icon: IconName; title: string; text: string }[] = [
   { href: "/admin/users", icon: "user", title: "משתמשים והרשאות", text: "הפיכת משתמש למדריך או מנהל, השהיית חשבון, פרטי צוות" },
   { href: "/admin/packages", icon: "card", title: "כרטיסיות", text: "חבילות שיעורים: כמות, מחיר ותוקף" },
   { href: "/admin/payments", icon: "wallet", title: "תשלומים", text: "מה שולם ומה פתוח, סיכום חודשי" },
+  { href: "/admin/reports", icon: "chart", title: "דוחות", text: "הכנסות, נוכחות, ביטולים, ימים ושעות עמוסים, מדריכים ומשפחות חדשות" },
+  { href: "/admin/skills", icon: "check", title: "מיומנויות והתקדמות", text: "רשימת המיומנויות שהמדריכים מסמנים לכל חניך" },
   { href: "/admin/announcements", icon: "flag", title: "הודעות להורים", text: "עדכונים שמופיעים בדף הבית של ההורים" },
   { href: "/pool", icon: "waves", title: "מסך בריכה", text: "תצוגה לטאבלט או מסך גדול: השיעור הקודם, מי עכשיו במים ומי הבא" },
 ];

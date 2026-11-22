@@ -8,7 +8,10 @@ import { LEVEL_LABEL, STATUS, type BookingStatus } from "@/domain/labels";
 import { Avatar, Pill } from "@/ui/primitives";
 import { Icon } from "@/ui/Icon";
 import { LessonReport } from "@/ui/parent/LessonReport";
+import { ProgressRecorder } from "@/ui/ProgressRecorder";
+import { loadProgressMany } from "@/lib/progress";
 import "../(parent)/parent.css";
+import "./staff.css";
 
 export const metadata: Metadata = { title: "יום העבודה" };
 
@@ -30,8 +33,13 @@ export default async function WorkdayPage({ searchParams }: PageProps<"/workday"
   const today = businessDay();
   const day = typeof sp.day === "string" && /^\d{4}-\d{2}-\d{2}$/.test(sp.day) ? sp.day : today;
   const supabase = await createClient();
-  const { data } = await supabase.rpc("instructor_day", { p_day: day });
+  const [{ data }, { data: studs }] = await Promise.all([
+    supabase.rpc("instructor_day", { p_day: day }),
+    supabase.rpc("instructor_day_students", { p_day: day }),
+  ]);
   const rows = (data ?? []) as Row[];
+  const studentOf = new Map(((studs ?? []) as { booking_id: string; student_id: string; first_name: string }[]).map((s) => [s.booking_id, s]));
+  const { byStudent } = await loadProgressMany([...new Set([...studentOf.values()].map((s) => s.student_id))]);
   const now = new Date();
   const open = rows.filter((r) => r.status === "approved" && new Date(r.starts_at) <= now).length;
   const dayLabel = day === today ? "היום" : day === addDays(today, 1) ? "מחר" : day === addDays(today, -1) ? "אתמול" : fmtWeekday(localToUtc(day, "12:00"));
@@ -51,6 +59,7 @@ export default async function WorkdayPage({ searchParams }: PageProps<"/workday"
               {day !== today ? <Link href="/workday" style={{ minWidth: 0, padding: "0 12px", fontWeight: 700 }}>היום</Link> : null}
               <Link href={`/workday?day=${addDays(day, 1)}`} aria-label="יום הבא"><Icon name="left" /></Link>
               <Link href="/pool" style={{ minWidth: 0, padding: "0 12px", fontWeight: 700, gap: 6, display: "flex", alignItems: "center" }}><Icon name="waves" small />מסך בריכה</Link>
+              <Link href="/workday/availability" style={{ minWidth: 0, padding: "0 12px", fontWeight: 700, gap: 6, display: "flex", alignItems: "center" }}><Icon name="clock" small />הזמינות שלי</Link>
             </span>
           </div>
         </>
@@ -91,6 +100,13 @@ export default async function WorkdayPage({ searchParams }: PageProps<"/workday"
                 <span className="block"><Icon name="alert" small />אלרגיות: {r.allergies}</span>
               ) : null}
               <LessonReport id={r.booking_id} report={r.lesson_report} started={start <= now} status={r.status} />
+              {start <= now && studentOf.get(r.booking_id) ? (
+                <ProgressRecorder
+                  studentId={studentOf.get(r.booking_id)!.student_id}
+                  firstName={studentOf.get(r.booking_id)!.first_name}
+                  summary={byStudent.get(studentOf.get(r.booking_id)!.student_id) ?? []}
+                />
+              ) : null}
             </div>
           );
         })

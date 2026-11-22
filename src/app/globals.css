@@ -495,3 +495,14 @@ fieldset.invalid,.field.invalid{animation:nudge 360ms var(--e-out)}
 .legal h2:first-child{margin-top:0}
 .legal p,.legal li{font-size:15px;line-height:1.7;color:#2C4A60;max-width:72ch}
 .legal ul{padding-inline-start:20px;margin:0}
+/* ---------- notifications ---------- */
+.who .bell{position:relative;min-width:44px;min-height:44px;justify-content:center;border-radius:12px}
+.who .bell .badge-n{position:absolute;top:2px;inset-inline-end:0;min-width:18px;height:18px;font-size:11px}
+.notif{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;text-decoration:none;color:inherit;width:100%;background:none;border:0;text-align:start;cursor:pointer;font:inherit}
+.notif.unread{background:linear-gradient(90deg,transparent,rgba(169,216,235,.22))}
+.notif .dotu{width:9px;height:9px;border-radius:50%;background:var(--coral);flex:none;margin-top:7px}
+.notif .dotu.read{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)}
+.notif .col small{white-space:pre-line}
+@media (hover:hover) and (pointer:fine){.notif:hover{background:#F5FAFC}}
+.series-list{display:grid;gap:6px}
+.series-list .row{justify-content:space-between;font-size:14px}

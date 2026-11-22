@@ -33,12 +33,14 @@ export function AppShell({
   role,
   name,
   badges,
+  unread = 0,
   head,
   children,
 }: {
   role: Role;
   name: string;
   badges?: Partial<Record<string, number>>;
+  unread?: number;
   head: ReactNode;
   children: ReactNode;
 }) {
@@ -48,7 +50,7 @@ export function AppShell({
   // "manage" covers every admin settings sub-page
   const manageActive = (i: NavItem) =>
     i.href === "/admin/manage" &&
-    ["/admin/manage", "/admin/settings", "/admin/services", "/admin/schedule", "/admin/users", "/admin/packages", "/admin/announcements", "/admin/payments"].some(
+    ["/admin/manage", "/admin/settings", "/admin/services", "/admin/schedule", "/admin/users", "/admin/packages", "/admin/announcements", "/admin/payments", "/admin/reports", "/admin/skills"].some(
       (p) => path === p || path.startsWith(p + "/"),
     );
 
@@ -79,6 +81,10 @@ export function AppShell({
                 מסך בריכה
               </Link>
             ) : null}
+            <Link href="/notifications" className="bell" aria-label={unread ? `התראות, ${unread} חדשות` : "התראות"}>
+              <Icon name="bell" />
+              {unread ? <span className="badge-n">{unread > 99 ? "99+" : unread}</span> : null}
+            </Link>
             <span>{name}</span>
             <form action="/auth/signout" method="post">
               <button type="submit" aria-label="התנתקות">

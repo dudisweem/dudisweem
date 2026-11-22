@@ -1,0 +1,7 @@
+/* progress views: parent kid page, admin student page, instructor workday */
+.prog-cat{display:grid;gap:10px;padding:14px 16px}
+.prog-cat+.prog-cat{border-top:1px solid var(--line)}
+.prog-head{display:flex;align-items:center;gap:12px}
+.prog-skill{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:14.5px}
+.prog-skill small{color:var(--mut)}
+.prog-form{display:grid;gap:10px;background:var(--ice);border-radius:14px;padding:12px}

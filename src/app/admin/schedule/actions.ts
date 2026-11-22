@@ -79,3 +79,23 @@ export async function removeTimeOff(fd: FormData) {
   if (error) flash(back, "err", "invalid");
   flash(back, "ok", "deleted");
 }
+
+export async function decideAvailability(fd: FormData) {
+  await requireRole("admin");
+  const back = backPath(fd, "/admin/schedule");
+  const id = uuid.safeParse(fd.get("id"));
+  const decision = z.enum(["approve", "reject"]).safeParse(fd.get("decision"));
+  if (!id.success || !decision.success) flash(back, "err", "invalid");
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("admin_decide_availability", {
+    p_request: id.data,
+    p_approve: decision.data === "approve",
+    p_note: str(fd, "note").slice(0, 300),
+  });
+  revalidatePath("/admin", "layout");
+  revalidatePath("/workday", "layout");
+  const r = data as { ok?: boolean; error?: string } | null;
+  if (error) flash(back, "err", "unknown");
+  if (r?.error) flash(back, "err", r.error === "has_lessons" ? "avail_has_lessons" : r.error);
+  flash(back, "ok", decision.data === "approve" ? "avail_approved" : "avail_rejected");
+}

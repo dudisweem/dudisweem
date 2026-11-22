@@ -5,6 +5,7 @@ import type { BookingStatus, Payment } from "@/domain/labels";
 export type AdminBooking = {
   id: string;
   number: number;
+  series_id?: string | null;
   starts_at: string;
   ends_at: string;
   status: BookingStatus;
@@ -28,7 +29,7 @@ export type AdminBooking = {
 };
 
 export const BOOKING_SELECT = `
-  id, number, starts_at, ends_at, status, price_agorot, payment_method, paid, parent_note, staff_note, lesson_report, created_at,
+  id, number, starts_at, ends_at, status, price_agorot, payment_method, paid, parent_note, staff_note, lesson_report, created_at, series_id,
   student:students!bookings_student_id_fkey ( id, first_name, last_name, color, health_signed_at,
     parent:profiles!students_parent_id_fkey ( full_name, phone, email ) ),
   service:services!bookings_service_id_fkey ( id, name, capacity ),

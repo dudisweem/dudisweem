@@ -1,0 +1,7 @@
+/* admin reports: plain CSS bars, value always printed as text */
+.bars{display:grid;gap:8px}
+.bar-row{display:grid;grid-template-columns:minmax(70px,auto) 1fr auto;gap:10px;align-items:center;font-size:14px}
+.bar-label{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:12ch}
+.bar-track{height:12px;border-radius:7px;background:var(--mist);overflow:hidden;position:relative}
+.bar-track i{position:absolute;inset:0 0 0 auto;background:linear-gradient(90deg,var(--w2),var(--w1));border-radius:7px}
+.bar-val{font-size:13.5px;white-space:nowrap}

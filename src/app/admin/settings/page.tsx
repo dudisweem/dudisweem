@@ -66,6 +66,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
           <div>
             <Toggle name="booking_open" label="ההרשמה לשיעורים פתוחה" hint="כשסגור, הורים לא יכולים לבקש שיעורים חדשים" on={s.booking_open} />
             <Toggle name="require_approval" label="כל בקשה דורשת אישור שלי" hint="כשכבוי, בקשה במועד פנוי מאושרת אוטומטית" on={s.require_approval} />
+            <Toggle name="instructor_availability_approval" label="שינויי זמינות של מדריכים דורשים אישור שלי" hint="כשכבוי, מדריך משנה שעות וחופשות בעצמו מיד" on={s.instructor_availability_approval ?? true} />
           </div>
           <Text name="closed_message" label="הודעה כשההרשמה סגורה" value={s.closed_message} />
           <div className="cols2">
@@ -86,6 +87,16 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
         <Group title="הצהרת בריאות">
           <Toggle name="health_required" label="חובה הצהרת בריאות בתוקף לפני הזמנה" on={s.health_required} />
           <Num name="health_validity_months" label="תוקף ההצהרה" unit="חודשים" value={s.health_validity_months} min={1} max={60} />
+        </Group>
+
+        <Group title="התראות במייל">
+          <div>
+            <Toggle name="email_admin_new_request" label="מייל למנהלים על בקשה חדשה או ביטול של הורה" on={s.email_admin_new_request ?? true} />
+            <Toggle name="email_parent_status" label="מייל להורה כשהשיעור אושר, נדחה או בוטל" on={s.email_parent_status ?? true} />
+            <Toggle name="email_reminders" label="תזכורת להורה יום לפני השיעור" on={s.email_reminders ?? true} />
+            <Toggle name="email_waitlist" label="מייל לרשימת המתנה כשמתפנה מקום" on={s.email_waitlist ?? true} />
+          </div>
+          <p className="hint" style={{ margin: 0 }}>התראות בתוך האתר (הפעמון) נשלחות תמיד. מיילים יוצאים רק אחרי חיבור שירות דוא״ל.</p>
         </Group>
 
         <Group title="תשלום">

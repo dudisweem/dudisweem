@@ -1,0 +1,11 @@
+/* instructor screens (availability, progress) — mirrors the admin schedule visuals */
+.acts-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.wh-day{display:grid;gap:8px;padding:12px 16px}
+.wh-day+.wh-day{border-top:1px solid var(--line)}
+.wh-day h3{margin:0;font:800 15px var(--f-ui)}
+.wh-chip{display:inline-flex;align-items:center;gap:6px;background:var(--free-bg);color:var(--free);border-radius:12px;padding:4px 4px 4px 10px;font-weight:700;font-size:14px}
+.wh-chip button{min-height:32px;width:32px;padding:0;border-radius:9px}
+label.chip{position:relative}
+label.chip input{position:absolute;opacity:0;pointer-events:none}
+label.chip:has(input:checked){background:var(--navy);color:#fff;box-shadow:none}
+label.chip:has(input:focus-visible){outline:2px solid var(--w2);outline-offset:2px}

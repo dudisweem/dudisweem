@@ -16,6 +16,9 @@ const OK_TEXT: Record<string, string> = {
   active: "סטטוס המשתמש עודכן.",
   user_deleted: "המשתמש נמחק לצמיתות.",
   reset_sent: "נשלח מייל עם קישור לאיפוס סיסמה.",
+  avail_approved: "הבקשה אושרה והשעות עודכנו בלוח.",
+  avail_rejected: "הבקשה נדחתה.",
+  progress: "ההתקדמות נשמרה.",
 };
 
 const LOCAL_ERR: Record<string, string> = {
@@ -25,6 +28,7 @@ const LOCAL_ERR: Record<string, string> = {
   has_lessons: "למדריך יש שיעורים במערכת ולכן אי אפשר למחוק אותו. אפשר להשהות את החשבון במקום.",
   cannot_delete_self: "אי אפשר למחוק את החשבון שלך.",
   rate_limited: "נשלחו יותר מדי מיילים. נסו שוב בעוד כמה דקות.",
+  avail_has_lessons: "יש שיעורים מתוכננים בזמן הזה, לכן אי אפשר לאשר את ההסרה. בטלו או העבירו את השיעורים קודם.",
   time_order: "שעת הסיום חייבת להיות אחרי שעת ההתחלה.",
 };
 

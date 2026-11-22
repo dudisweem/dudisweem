@@ -1,5 +1,6 @@
 // One stroke icon family (1.8 stroke), ported from the approved prototype sprite.
 const PATHS = {
+  "bell": "<path d=\"M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2H4.5l1.5-2Z\"/><path d=\"M10 20.5a2 2 0 0 0 4 0\"/>",
   "home": "<path d=\"M3 10.5 12 3l9 7.5\"/><path d=\"M5 9.5V20h14V9.5\"/><path d=\"M10 20v-5h4v5\"/>",
   "kids": "<circle cx=\"9\" cy=\"8\" r=\"3.2\"/><path d=\"M3.5 20c.6-3.4 2.8-5.4 5.5-5.4s4.9 2 5.5 5.4\"/><circle cx=\"17\" cy=\"9.5\" r=\"2.5\"/><path d=\"M15.5 14.6c2.4.2 4.2 2 4.8 5.4\"/>",
   "cal": "<rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"2.5\"/><path d=\"M3.5 10h17M8 3v4M16 3v4\"/>",

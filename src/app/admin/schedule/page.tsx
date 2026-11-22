@@ -3,12 +3,13 @@ import Link from "next/link";
 import { Shell, Head } from "@/ui/Shell";
 import { createClient } from "@/lib/supabase/server";
 import { businessDay, fmtDate, fmtTime, WEEKDAYS } from "@/domain/format";
-import { Avatar, Empty } from "@/ui/primitives";
+import { Avatar, Empty, Pill } from "@/ui/primitives";
 import { Icon } from "@/ui/Icon";
 import { SubmitButton } from "@/ui/SubmitButton";
 import { ConfirmButton } from "@/ui/admin/ConfirmButton";
 import { Flash } from "../_lib/Flash";
-import { addHours, addTimeOff, removeHours, removeTimeOff } from "./actions";
+import { addHours, addTimeOff, decideAvailability, removeHours, removeTimeOff } from "./actions";
+import { describeRequest, type AvailabilityKind } from "@/domain/availability";
 
 export const metadata: Metadata = { title: "שעות עבודה" };
 
@@ -17,11 +18,15 @@ const short = (t: string) => t.slice(0, 5);
 export default async function SchedulePage({ searchParams }: PageProps<"/admin/schedule">) {
   const sp = await searchParams;
   const supabase = await createClient();
-  const [staffRes, whRes, offRes] = await Promise.all([
+  const [staffRes, whRes, offRes, reqRes] = await Promise.all([
     supabase.from("profiles").select("id, full_name, color, role").in("role", ["admin", "instructor"]).eq("active", true).order("full_name"),
     supabase.from("working_hours").select("id, instructor_id, weekday, start_time, end_time").order("weekday").order("start_time"),
     supabase.from("time_off").select("id, instructor_id, starts_at, ends_at, reason").gte("ends_at", new Date().toISOString()).order("starts_at"),
+    supabase.from("availability_requests").select("id, instructor_id, kind, payload, created_at").eq("status", "pending").order("created_at"),
   ]);
+  const pendingReqs = (reqRes.data ?? []) as { id: string; instructor_id: string; kind: AvailabilityKind; payload: Record<string, unknown>; created_at: string }[];
+  const hoursLookup = new Map((whRes.data ?? []).map((w) => [w.id, `יום ${WEEKDAYS[w.weekday]} ${short(w.start_time)}–${short(w.end_time)}`]));
+  const offLookup = new Map((offRes.data ?? []).map((o) => [o.id, `${fmtDate(o.starts_at)}${o.reason ? " · " + o.reason : ""}`]));
   const staff = staffRes.data ?? [];
   const selected = typeof sp.i === "string" && staff.some((s) => s.id === sp.i) ? sp.i : staff[0]?.id;
   const me = staff.find((s) => s.id === selected);
@@ -37,6 +42,39 @@ export default async function SchedulePage({ searchParams }: PageProps<"/admin/s
   return (
     <Shell roles={["admin"]} head={<Head kicker="ניהול" title="שעות עבודה וחסימות" />}>
       <Flash sp={sp} />
+      {pendingReqs.length ? (
+        <section className="surf list" aria-labelledby="avreq-h">
+          <div className="pad row">
+            <Icon name="inbox" />
+            <b id="avreq-h" className="grow">בקשות זמינות ממדריכים</b>
+            <Pill kind="wait">{pendingReqs.length} ממתינות</Pill>
+          </div>
+          {pendingReqs.map((r) => {
+            const who = staff.find((s) => s.id === r.instructor_id);
+            return (
+              <form key={r.id} action={decideAvailability} className="pad stack-s">
+                <input type="hidden" name="id" value={r.id} />
+                <input type="hidden" name="back" value={back} />
+                <div className="row">
+                  {who ? <Avatar name={who.full_name} color={who.color} /> : null}
+                  <span className="col grow">
+                    <b>{who?.full_name || "מדריך"}</b>
+                    <small>{describeRequest(r.kind, r.payload, { hours: hoursLookup, off: offLookup })}</small>
+                  </span>
+                </div>
+                <div className="inline-form">
+                  <div className="field">
+                    <label htmlFor={`n-${r.id}`}>הערה למדריך (לא חובה)</label>
+                    <input className="inp" id={`n-${r.id}`} name="note" maxLength={300} />
+                  </div>
+                  <SubmitButton variant="solid" sm name="decision" value="approve"><Icon name="check" small />אישור</SubmitButton>
+                  <SubmitButton variant="danger" sm name="decision" value="reject"><Icon name="x" small />דחייה</SubmitButton>
+                </div>
+              </form>
+            );
+          })}
+        </section>
+      ) : null}
       {staff.length === 0 ? (
         <div className="surf"><Empty icon="user">אין מדריכים. הפכו משתמש למדריך ב<Link className="link" href="/admin/users">משתמשים</Link>.</Empty></div>
       ) : (

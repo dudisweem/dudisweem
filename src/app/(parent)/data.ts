@@ -44,6 +44,7 @@ export type BookingRow = {
   paid: boolean;
   parent_note: string;
   lesson_report: string;
+  series_id: string | null;
   service: { name: string; duration_min: number } | null;
 };
 
@@ -130,7 +131,7 @@ export async function getBookings(kidIds: string[]) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("bookings")
-    .select("id, number, student_id, service_id, instructor_id, starts_at, ends_at, status, price_agorot, payment_method, paid, parent_note, lesson_report, service:services(name, duration_min)")
+    .select("id, number, student_id, service_id, instructor_id, starts_at, ends_at, status, price_agorot, payment_method, paid, parent_note, lesson_report, series_id, service:services(name, duration_min)")
     .in("student_id", kidIds)
     .order("starts_at", { ascending: true });
   return (data ?? []) as unknown as BookingRow[];

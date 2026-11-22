@@ -90,6 +90,9 @@ export default async function BookPage({ searchParams }: PageProps<"/book">) {
       payboxLink={settings.paybox_link}
       bitLink={settings.bit_link ?? ""}
       initialKid={flowKids.some((k) => k.id === kidParam && k.healthOk) ? kidParam : null}
+      initialService={typeof sp.service === "string" ? sp.service : null}
+      initialDay={typeof sp.day === "string" ? sp.day : null}
+      horizonDays={settings.booking_horizon_days}
     />
   );
 }

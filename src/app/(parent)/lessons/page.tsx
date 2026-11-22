@@ -8,7 +8,12 @@ import { Pill } from "@/ui/primitives";
 import { Icon } from "@/ui/Icon";
 import { ConfirmAction } from "@/ui/parent/ConfirmAction";
 import { cancelBooking } from "../actions";
+import { cancelSeriesRest, leaveWaitlist } from "./actions";
 import { getBookings, getInstructorNames, getMyKids, type BookingRow, type Kid } from "../data";
+import { createClient } from "@/lib/supabase/server";
+import { fmtDayLabel } from "@/domain/format";
+
+type WaitRow = { id: string; student_id: string; service_id: string; day: string; from_time: string | null; to_time: string | null; status: "waiting" | "notified"; service: { name: string } | null };
 
 export const metadata: Metadata = { title: "השיעורים שלנו" };
 
@@ -23,6 +28,25 @@ export default async function LessonsPage({ searchParams }: PageProps<"/lessons"
   const upcoming = bookings.filter((b) => new Date(b.starts_at) > now && (b.status === "pending" || b.status === "approved"));
   const past = bookings.filter((b) => !upcoming.includes(b)).reverse();
   const kidOf = new Map(kids.map((k) => [k.id, k]));
+  const supabase = await createClient();
+  const { data: wlData } = kids.length
+    ? await supabase
+        .from("waitlist")
+        .select("id, student_id, service_id, day, from_time, to_time, status, service:services(name)")
+        .in("student_id", kids.map((k) => k.id))
+        .in("status", ["waiting", "notified"])
+        .order("day")
+    : { data: [] };
+  const waits = ((wlData ?? []) as unknown as WaitRow[]).filter((w) => !kidFilter || w.student_id === kidFilter);
+  // first upcoming lesson of each series, so "cancel the rest" shows once per series
+  const seriesHead = new Set<string>();
+  const seenSeries = new Set<string>();
+  for (const b of upcoming) {
+    if (b.series_id && !seenSeries.has(b.series_id)) {
+      seenSeries.add(b.series_id);
+      seriesHead.add(b.id);
+    }
+  }
 
   return (
     <Shell
@@ -61,10 +85,42 @@ export default async function LessonsPage({ searchParams }: PageProps<"/lessons"
           </div>
         ) : (
           upcoming.map((b) => (
-            <LessonRow key={b.id} b={b} kid={kidOf.get(b.student_id)} instructor={instructors.get(b.instructor_id)?.name} hours={settings.cancellation_hours} now={now} />
+            <LessonRow key={b.id} b={b} kid={kidOf.get(b.student_id)} instructor={instructors.get(b.instructor_id)?.name} hours={settings.cancellation_hours} now={now} seriesHead={seriesHead.has(b.id)} />
           ))
         )}
       </div>
+
+      {waits.length > 0 ? (
+        <>
+          <div className="sec-h"><h2>רשימת המתנה</h2></div>
+          <div className="surf list">
+            {waits.map((w) => {
+              const kid = kidOf.get(w.student_id);
+              const window = w.from_time || w.to_time ? ` · ${w.from_time?.slice(0, 5) ?? ""}–${w.to_time?.slice(0, 5) ?? ""}` : "";
+              return (
+                <div key={w.id} className="lessonrow">
+                  <span className="tm num">{fmtDayLabel(w.day).split(".").slice(0, 2).join(".")}<small>{fmtDayLabel(w.day)}</small></span>
+                  <span className="col">
+                    <b>{kid?.first_name} · {w.service?.name}</b>
+                    <small>{w.status === "notified" ? "התפנה מקום! מי שמזמין ראשון מקבל." : `ממתינים למקום פנוי${window}`}</small>
+                  </span>
+                  <span className="acts">
+                    {w.status === "notified" ? (
+                      <>
+                        <Pill kind="free">התפנה מקום</Pill>
+                        <Link className="btn primary sm" href={`/book?kid=${w.student_id}&service=${w.service_id}&day=${w.day}`}>להזמנה</Link>
+                      </>
+                    ) : (
+                      <Pill kind="wait">ממתין</Pill>
+                    )}
+                    <ConfirmAction action={leaveWaitlist} fields={{ id: w.id }} label="יציאה מהרשימה" question="לצאת מרשימת ההמתנה?" confirmLabel="כן, לצאת" />
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      ) : null}
 
       {past.length > 0 ? (
         <>
@@ -80,7 +136,7 @@ export default async function LessonsPage({ searchParams }: PageProps<"/lessons"
   );
 }
 
-function LessonRow({ b, kid, instructor, hours, now, past }: { b: BookingRow; kid?: Kid; instructor?: string; hours: number; now: Date; past?: boolean }) {
+function LessonRow({ b, kid, instructor, hours, now, past, seriesHead }: { b: BookingRow; kid?: Kid; instructor?: string; hours: number; now: Date; past?: boolean; seriesHead?: boolean }) {
   const s = STATUS[b.status];
   const start = new Date(b.starts_at);
   // pending requests can be withdrawn any time before start; approved ones respect the cancellation window
@@ -103,6 +159,7 @@ function LessonRow({ b, kid, instructor, hours, now, past }: { b: BookingRow; ki
       </span>
       <span className="acts">
         <Pill kind={s.kind}>{s.label}</Pill>
+        {b.series_id ? <span className="pill p-done"><Icon name="refresh" />כל שבוע</span> : null}
         {!past && b.payment_method !== "card" && b.status === "approved" ? (
           b.paid ? <Pill kind="ok">שולם</Pill> : <Pill kind="wait">טרם שולם</Pill>
         ) : null}
@@ -115,6 +172,15 @@ function LessonRow({ b, kid, instructor, hours, now, past }: { b: BookingRow; ki
             confirmLabel="כן, לבטל"
             disabled={!allowed}
             disabledReason={`פחות מ־${hours} שעות לשיעור — לביטול צרו קשר עם בית הספר`}
+          />
+        ) : null}
+        {!past && seriesHead && b.series_id ? (
+          <ConfirmAction
+            action={cancelSeriesRest}
+            fields={{ series: b.series_id, from: b.starts_at }}
+            label="ביטול כל הסדרה מכאן"
+            question={`לבטל את כל השיעורים הקבועים של ${kid?.first_name ?? ""} מ־${fmtDate(b.starts_at)} והלאה?`}
+            confirmLabel="כן, לבטל הכל"
           />
         ) : null}
       </span>

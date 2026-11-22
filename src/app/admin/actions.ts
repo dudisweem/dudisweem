@@ -9,6 +9,30 @@ const uuid = z.string().uuid();
 
 function touch() {
   revalidatePath("/admin", "layout");
+  // booking changes queue notifications + emails in the DB (trigger); pg_cron sends them within a minute
+}
+
+/** Approve every pending lesson of a weekly series at once (one summary notification to the family). */
+export async function approveSeries(fd: FormData) {
+  await requireRole("admin");
+  const back = backPath(fd, "/admin/requests");
+  const series = uuid.safeParse(fd.get("series"));
+  if (!series.success) flash(back, "err", "unknown");
+  const supabase = await createClient();
+  const res = await supabase.rpc("approve_series", { p_series: series.data });
+  touch();
+  rpcOutcome(back, res, "approved");
+}
+
+export async function adminLeaveWaitlist(fd: FormData) {
+  await requireRole("admin");
+  const back = backPath(fd, "/admin/requests");
+  const id = uuid.safeParse(fd.get("id"));
+  if (!id.success) flash(back, "err", "unknown");
+  const supabase = await createClient();
+  const res = await supabase.rpc("leave_waitlist", { p_id: id.data });
+  touch();
+  rpcOutcome(back, res, "deleted");
 }
 
 export async function setStatus(fd: FormData) {

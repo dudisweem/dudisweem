@@ -5,9 +5,29 @@ import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/ui/AppShell";
 import { Icon, type IconName } from "@/ui/Icon";
 import { Pill, Vessel, Alert } from "@/ui/primitives";
-import { dayNum, fmtDayLabel, fmtMoney, fmtShortDay, fmtTime, localToUtc } from "@/domain/format";
+import { dayNum, fmtDate, fmtDayLabel, fmtMoney, fmtShortDay, fmtTime, localToUtc } from "@/domain/format";
 import { errorText, PAYMENT_LABEL, type Payment, type Role } from "@/domain/labels";
-import { checkAttempt, fetchSlots, submitBooking, type BookResult, type Slot } from "@/app/(parent)/book/actions";
+import {
+  checkAttempt,
+  checkSeries,
+  fetchSlots,
+  joinWaitlist,
+  submitBooking,
+  submitSeries,
+  type BookResult,
+  type SeriesResult,
+  type Slot,
+} from "@/app/(parent)/book/actions";
+
+// series / waitlist codes not covered by the shared error table
+const LOCAL_ERR: Record<string, string> = {
+  beyond_horizon: "מעבר לחלון ההזמנה",
+  bad_weeks: "מספר שבועות לא תקין",
+  bad_day: "היום מחוץ לחלון ההזמנה",
+  time_order: "שעת הסיום חייבת להיות אחרי שעת ההתחלה",
+};
+const errOf = (code?: string | null) => (code && LOCAL_ERR[code]) || errorText(code);
+const WEEK_OPTIONS = [2, 3, 4, 5, 6, 8, 10, 12];
 
 export type FlowKid = {
   id: string;
@@ -50,14 +70,26 @@ export function BookingFlow(props: {
   payboxLink: string;
   bitLink: string;
   initialKid: string | null;
+  initialService?: string | null;
+  initialDay?: string | null;
+  horizonDays: number;
 }) {
   const { kids, services, instructors, days, payments } = props;
-  const [step, setStep] = useState(props.initialKid ? 1 : 0);
+  // deep link from a waitlist offer: /book?kid=&service=&day= jumps straight to the slots
+  const preService = props.initialService && services.some((s) => s.id === props.initialService) ? props.initialService : null;
+  const preDay = props.initialDay && days.includes(props.initialDay) ? props.initialDay : null;
+  const [step, setStep] = useState(props.initialKid ? (preService && preDay ? 2 : 1) : 0);
   const [dir, setDir] = useState<1 | -1 | 0>(0);
   const [kidId, setKidId] = useState<string | null>(props.initialKid);
-  const [serviceId, setServiceId] = useState<string | null>(null);
+  const [serviceId, setServiceId] = useState<string | null>(props.initialKid ? preService : null);
   const [instructorId, setInstructorId] = useState<string | null>(null);
-  const [day, setDay] = useState<string | null>(null);
+  const [day, setDay] = useState<string | null>(props.initialKid && preService ? preDay : null);
+  const [repeat, setRepeat] = useState(false);
+  const [weeks, setWeeks] = useState(4);
+  const [series, setSeries] = useState<SeriesResult | null>(null);
+  const [wl, setWl] = useState<{ state: "idle" | "saving" | "done" | "error"; code?: string }>({ state: "idle" });
+  const [wlFrom, setWlFrom] = useState("");
+  const [wlTo, setWlTo] = useState("");
   const [slot, setSlot] = useState<Slot | null>(null);
   const [slotState, setSlotState] = useState<{ key: string; slots: Slot[]; error: boolean }>({ key: "", slots: [], error: false });
   const [payment, setPayment] = useState<Payment | null>(null);
@@ -99,6 +131,15 @@ export function BookingFlow(props: {
       });
   }
 
+  // waitlist deep link: fetch the preselected day's slots once on mount
+  const preloaded = useRef(false);
+  useEffect(() => {
+    if (preloaded.current || !serviceId || !day) return;
+    preloaded.current = true;
+    loadSlots(serviceId, instructorId, day);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot preload for the deep link
+  }, []);
+
   const go = (n: number) => {
     setDir(n > step ? 1 : -1);
     setStep(n);
@@ -119,11 +160,13 @@ export function BookingFlow(props: {
   const pickInstructor = (id: string | null) => {
     setInstructorId(id);
     setSlot(null);
+    setWl({ state: "idle" });
     loadSlots(serviceId, id, day);
   };
   const pickDay = (d: string) => {
     setDay(d);
     setSlot(null);
+    setWl({ state: "idle" });
     loadSlots(serviceId, instructorId, d);
   };
 
@@ -142,6 +185,22 @@ export function BookingFlow(props: {
       payment,
       note: note.trim().slice(0, 500),
     };
+    if (repeat) {
+      // same attempt id on every retry → the server returns the same series, never a second one
+      let s: SeriesResult = { ok: "unknown" };
+      for (let i = 0; i < 3; i++) {
+        try {
+          s = await submitSeries({ ...input, weeks });
+        } catch {
+          s = { ok: "unknown" };
+        }
+        if (s.ok !== "unknown") break;
+        setStatus("checking");
+        await new Promise((res) => setTimeout(res, 1200 * (i + 1)));
+      }
+      applySeries(s);
+      return;
+    }
     let r: BookResult = { ok: "unknown" };
     for (let i = 0; i < 3; i++) {
       try {
@@ -170,12 +229,37 @@ export function BookingFlow(props: {
     }
   }
 
+  function applySeries(s: SeriesResult) {
+    setSeries(s);
+    if (s.ok === true) {
+      const first = s.weeks.find((w) => w.ok);
+      setResult({ ok: true, bookingId: "", number: first?.number ?? 0, status: first?.status ?? "pending" });
+      setStatus("sent");
+    } else if (s.ok === "unknown") setStatus("checking");
+    else {
+      setStatus("error");
+      setErrCode(s.code);
+    }
+  }
+
   async function recheck() {
     setStatus("checking");
     try {
-      applyResult(await checkAttempt(attemptRef.current));
+      if (repeat) applySeries(await checkSeries(attemptRef.current));
+      else applyResult(await checkAttempt(attemptRef.current));
     } catch {
       setStatus("checking");
+    }
+  }
+
+  async function addToWaitlist() {
+    if (!kid || !service || !day) return;
+    setWl({ state: "saving" });
+    try {
+      const r = await joinWaitlist({ studentId: kid.id, serviceId: service.id, instructorId, day, from: wlFrom || null, to: wlTo || null });
+      setWl(r.ok ? { state: "done" } : { state: "error", code: r.code });
+    } catch {
+      setWl({ state: "error", code: "unknown" });
     }
   }
 
@@ -195,6 +279,9 @@ export function BookingFlow(props: {
     setStatus("idle");
     setResult(null);
     setErrCode(null);
+    setRepeat(false);
+    setSeries(null);
+    setWl({ state: "idle" });
   }
 
   // ------------------------------------------------------------- sent
@@ -219,6 +306,23 @@ export function BookingFlow(props: {
             <span className="pill p-done num">בקשה #{result.number}</span>
           </div>
         </div>
+        {series?.ok === true ? (
+          <div className="surf pad stack-s">
+            <b>נקבעו {series.booked} מתוך {series.weeks.length} שבועות</b>
+            <div className="series-list">
+              {series.weeks.map((w) => (
+                <div key={w.index} className="row">
+                  <span className="num">שבוע {w.index + 1} · {fmtShortDay(w.start)} {fmtDate(w.start)} {fmtTime(w.start)}</span>
+                  {w.ok ? (
+                    w.status === "approved" ? <Pill kind="ok">נקבע</Pill> : <Pill kind="wait">ממתין לאישור</Pill>
+                  ) : (
+                    <Pill kind="bad">דולג · {errOf(w.code)}</Pill>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
         {payment === "bit" || payment === "paybox" ? (
           <div className="surf pad row" style={{ alignItems: "flex-start" }}>
             <span className="av m" style={{ background: "var(--free-bg)", color: "var(--free)" }}><Icon name="wallet" /></span>
@@ -365,7 +469,29 @@ export function BookingFlow(props: {
                 })}
               </div>
             ) : (
-              <div className="surf pad hint">אין זמנים פנויים ביום הזה{instructorId ? " אצל המדריך שבחרתם" : ""}. נסו יום אחר{instructorId ? " או ״כל מדריך פנוי״" : ""}.</div>
+              <div className="surf pad stack-s">
+                <span className="hint">אין זמנים פנויים ביום הזה{instructorId ? " אצל המדריך שבחרתם" : ""}. נסו יום אחר{instructorId ? " או ״כל מדריך פנוי״" : ""} — או הצטרפו לרשימת ההמתנה.</span>
+                {wl.state === "done" ? (
+                  <Alert kind="ok">נרשמתם לרשימת ההמתנה ל־{fmtDayLabel(day)}. אם יתפנה מקום תקבלו התראה (ובמייל) — מי שמזמין ראשון מקבל.</Alert>
+                ) : kid && service ? (
+                  <>
+                    <div className="cols2">
+                      <div className="field">
+                        <label htmlFor="wl-from">משעה (לא חובה)</label>
+                        <input className="inp ltr" id="wl-from" type="time" step={900} value={wlFrom} onChange={(e) => setWlFrom(e.target.value)} dir="ltr" />
+                      </div>
+                      <div className="field">
+                        <label htmlFor="wl-to">עד שעה (לא חובה)</label>
+                        <input className="inp ltr" id="wl-to" type="time" step={900} value={wlTo} onChange={(e) => setWlTo(e.target.value)} dir="ltr" />
+                      </div>
+                    </div>
+                    {wl.state === "error" ? <Alert kind="bad">{errOf(wl.code)}</Alert> : null}
+                    <button type="button" className="btn ghost" onClick={addToWaitlist} disabled={wl.state === "saving"} aria-busy={wl.state === "saving" || undefined}>
+                      {wl.state === "saving" ? <><span className="spin" aria-hidden="true" />נרשמים…</> : <><Icon name="flag" />רשימת המתנה ל{kid.first}</>}
+                    </button>
+                  </>
+                ) : null}
+              </div>
             )}
           </div>
         ) : (
@@ -405,6 +531,28 @@ export function BookingFlow(props: {
           <label htmlFor="note">הערה למדריך</label>
           <textarea className="inp" id="note" maxLength={500} value={note} onChange={(e) => setNote(e.target.value)} placeholder="לא חובה" />
         </div>
+        <div className="surf pad stack-s">
+          <label className="toggle" style={{ borderTop: 0, padding: 0 }}>
+            <span className="col">
+              <b>חוזר כל שבוע</b>
+              <small>אותו יום ושעה{slot ? ` (${fmtShortDay(slot.startsAt)} ${fmtTime(slot.startsAt)})` : ""} למשך כמה שבועות</small>
+            </span>
+            <input type="checkbox" checked={repeat} onChange={(e) => setRepeat(e.target.checked)} />
+          </label>
+          {repeat ? (
+            <div className="field">
+              <label htmlFor="weeks">מספר שבועות</label>
+              <select className="inp" id="weeks" value={weeks} onChange={(e) => setWeeks(Number(e.target.value))}>
+                {WEEK_OPTIONS.map((w) => (
+                  <option key={w} value={w}>{w} שבועות</option>
+                ))}
+              </select>
+              <span className="hint">
+                כל שבוע נבדק בנפרד (מקום פנוי, כרטיסייה, אישור). שבוע תפוס או מעבר ל־{props.horizonDays} ימים מהיום יידלג, והשאר ייקבעו.
+              </span>
+            </div>
+          ) : null}
+        </div>
       </>
     );
   } else if (step === 4 && kid && service && slot && payment) {
@@ -417,6 +565,7 @@ export function BookingFlow(props: {
             <div><span>מועד</span><b className="num">יום {fmtShortDay(slot.startsAt)} {fmtDayLabel(day!)} · {fmtTime(slot.startsAt)}</b></div>
             <div><span>מדריך</span><b>{slot.instructorName}</b></div>
             <div><span>תשלום</span><b>{PAYMENT_LABEL[payment]}{payment === "card" ? "" : ` · ${fmtMoney(service.price)}`}</b></div>
+            {repeat ? <div><span>חזרה</span><b>כל שבוע · {weeks} שבועות</b></div> : null}
             <div><span>בריאות</span><b><Pill kind="ok">בתוקף</Pill></b></div>
             {note.trim() ? <div><span>הערה</span><b style={{ whiteSpace: "pre-line" }}>{note.trim()}</b></div> : null}
           </div>
@@ -434,7 +583,7 @@ export function BookingFlow(props: {
         </p>
         {status === "error" && errCode ? (
           <Alert kind="bad">
-            {errorText(errCode)}
+            {errOf(errCode)}
             {errCode === "not_authenticated" ? (
               <> <Link className="link" href="/login?next=/book">התחברות</Link></>
             ) : null}

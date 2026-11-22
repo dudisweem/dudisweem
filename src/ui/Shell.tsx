@@ -8,8 +8,13 @@ import type { Role } from "@/domain/labels";
 export async function Shell({ roles, head, children }: { roles: Role[]; head: ReactNode; children: ReactNode }) {
   const me = await requireRole(...roles);
   let badges: Record<string, number> | undefined;
+  const supabase = await createClient();
+  const { count: unread } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", me.id)
+    .is("read_at", null);
   if (me.role === "admin") {
-    const supabase = await createClient();
     const { count } = await supabase
       .from("bookings")
       .select("id", { count: "exact", head: true })
@@ -18,7 +23,7 @@ export async function Shell({ roles, head, children }: { roles: Role[]; head: Re
     if (count) badges = { "/admin/requests": count };
   }
   return (
-    <AppShell role={me.role} name={me.full_name || me.email} badges={badges} head={head}>
+    <AppShell role={me.role} name={me.full_name || me.email} badges={badges} unread={unread ?? 0} head={head}>
       {children}
     </AppShell>
   );

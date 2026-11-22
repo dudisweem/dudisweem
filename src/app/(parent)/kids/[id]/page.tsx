@@ -13,6 +13,8 @@ import { getBookings, getGuardians, getInstructorNames, getMedical, type Credit,
 import { Guardians } from "@/ui/parent/Guardians";
 import { setKidActive } from "../../actions";
 import { ConfirmAction } from "@/ui/parent/ConfirmAction";
+import { ProgressView } from "@/ui/ProgressView";
+import { loadProgress } from "@/lib/progress";
 
 export const metadata: Metadata = { title: "כרטיס ילד" };
 
@@ -26,13 +28,14 @@ export default async function KidPage({ params, searchParams }: PageProps<"/kids
   const { data: kidRow } = await supabase.from("students").select("*").eq("id", id).maybeSingle();
   if (!kidRow) notFound();
   const kid = kidRow as Kid;
-  const [settings, bookings, instructors, { data: creditRows }, medical, guardians] = await Promise.all([
+  const [settings, bookings, instructors, { data: creditRows }, medical, guardians, progress] = await Promise.all([
     getSettings(),
     getBookings([kid.id]),
     getInstructorNames(),
     supabase.from("credits").select("*").eq("student_id", kid.id).order("created_at", { ascending: false }),
     getMedical(kid.id),
     getGuardians(kid.id),
+    loadProgress(kid.id),
   ]);
   const isOwner = kid.parent_id === me.id;
   const credits = (creditRows ?? []) as Credit[];
@@ -102,6 +105,9 @@ export default async function KidPage({ params, searchParams }: PageProps<"/kids
       {ok ? (
         <Link className="btn primary full" href={`/book?kid=${kid.id}`}><Icon name="plus" />הזמנת שיעור ל{kid.first_name}</Link>
       ) : null}
+
+      <div className="sec-h"><h2>ההתקדמות של {kid.first_name}</h2></div>
+      <ProgressView summary={progress} title={`ההתקדמות של ${kid.first_name}`} />
 
       <div className="sec-h"><h2>שיעורים קרובים</h2></div>
       <div className="surf list">

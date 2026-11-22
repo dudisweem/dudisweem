@@ -12,6 +12,8 @@ import { SubmitButton } from "@/ui/SubmitButton";
 import { ConfirmButton } from "@/ui/admin/ConfirmButton";
 import { Flash } from "../../_lib/Flash";
 import { addCredit, deleteCredit, updateCredit, updateStudentAdmin } from "../actions";
+import { ProgressView } from "@/ui/ProgressView";
+import { loadProgress } from "@/lib/progress";
 
 export const metadata: Metadata = { title: "תלמיד" };
 
@@ -199,6 +201,13 @@ export default async function StudentDetail({ params, searchParams }: PageProps<
         </div>
 
         <div className="stack">
+          <section className="stack-s" aria-labelledby="pg-h">
+            <div className="sec-h">
+              <h2 id="pg-h">התקדמות</h2>
+              <Link href="/admin/skills">ניהול מיומנויות</Link>
+            </div>
+            <ProgressView summary={await loadProgress(id)} />
+          </section>
           <section className="stack-s" aria-labelledby="cr-h">
             <div className="sec-h"><h2 id="cr-h">כרטיסיות</h2></div>
             {credits.length === 0 ? <div className="surf"><Empty icon="card">אין כרטיסיות לתלמיד.</Empty></div> : null}
